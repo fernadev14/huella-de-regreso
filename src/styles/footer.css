@@ -1,0 +1,13 @@
+footer {
+    font-family: var(--font-family);
+}
+
+.contacto a, .info a {
+    color: var(--primary-text-color);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.info a li {
+    margin-bottom: 10px;
+}

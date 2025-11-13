@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+:root {
+  --font-family: 'Poppins', Avenir, Helvetica, Arial, sans-serif;
+  --primary-color-yellow: #FFD54F;
+  --second-color-green: #43A047;
+  --auxiliar-color-blue: #00A8A8; 
+  --primary-text-color: #333333;
+  --neutro-white-color: #F8FCFA;
+  --subtitulo-color: #535353;
+  
+
+  /* line-height: 1.5;
+  font-weight: 400; */
+}
