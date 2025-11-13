@@ -70,7 +70,7 @@ const Faq = () => {
                                 "
                                 >
                                     <div className="min-h-0">
-                                        <div className="px-2 pb-5 pl-[3.25rem] text-sm leading-6 text-[#3f3f3f]
+                                        <div className="px-2 pb-5 pl-13 text-sm leading-6 text-[#3f3f3f]
                                                         opacity-0 translate-y-2 transition-all duration-300
                                                         group-open:opacity-100 group-open:translate-y-0">
                                         {item.a}
