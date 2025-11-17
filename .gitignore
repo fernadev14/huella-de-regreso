@@ -7,6 +7,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+.env
+CLOUDINARY_FIRESTORE_SETUP.md
+FIREBASE_SETUP.md
+FIXES_SUMMARY.md
+UPDATES.md
+README_HOSTING.md
+SETUP_COMPLETE.txt
+
+
 node_modules
 dist
 dist-ssr

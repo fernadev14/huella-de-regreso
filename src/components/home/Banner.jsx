@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom"
 import maskBannerImg from "../../assets/Mask-banner-home.png"
 
 const Banner = () => {
+
   return (
     <>
         <div className='banner-container relative h-full bg-[#A8C7DC] flex text-center'>
@@ -22,14 +24,10 @@ const Banner = () => {
                 </p>
 
                 <div className="flex justify-center">
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center rounded-xl bg-[#F7D047] px-6 py-3 text-sm font-bold text-[#333333] shadow-md transition hover:-translate-y-0.5 hover:bg-[#eac236] active:translate-y-0 cursor-pointer"
-                    >
-                        <span className="text-2xl mr-1" 
-                        >+</span>
-                       Reportar mascota
-                    </button>
+                  <Link to="/nuevo-reporte" className="inline-flex items-center justify-center rounded-xl bg-[#F7D047] px-6 py-3 text-sm font-bold text-[#333333] shadow-md transition hover:-translate-y-0.5 hover:bg-[#eac236] active:translate-y-0 cursor-pointer">
+                    <span className="text-2xl mr-1">+</span>
+                    Reportar mascota
+                  </Link>
                 </div>
             </div>
         </div>   

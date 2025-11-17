@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, googleProvider, db } from '../config/firebase'
 
-const Login = () => {
-  const navigate = useNavigate()
+const Signup = () => {
   const location = useLocation()
-  const prefill = location.state?.email || ''
+  const navigate = useNavigate()
+  const prefilledEmail = location.state?.email || ''
 
-  const [email, setEmail] = useState(prefill)
+  const [email, setEmail] = useState(prefilledEmail)
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -20,32 +22,51 @@ const Login = () => {
     setLoading(true)
 
     try {
-      if (!email) return setError('Ingrese su correo')
-      if (!password) return setError('Ingrese su contraseña')
+      if (!email) return setError('Ingrese un correo válido')
+      if (!password) return setError('Ingrese una contraseña')
+      if (password.length < 6) return setError('La contraseña debe tener al menos 6 caracteres')
+      if (!firstName.trim()) return setError('Ingrese su nombre')
 
-      // Intenta iniciar sesión con Firebase
-      await signInWithEmailAndPassword(auth, email, password)
-      // Si es exitoso, navega al home
+      // Crea la cuenta con Firebase
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+
+      // Actualizar nombre en Auth
+      await updateProfile(user, {
+        displayName: `${firstName} ${lastName}`.trim(),
+      })
+
+      // Guardar datos adicionales en Firestore
+      const userRef = doc(db, 'users', user.uid)
+      await setDoc(userRef, {
+        firstName,
+        lastName,
+        email,
+        photoURL: null,
+        uid: user.uid,
+        createdAt: new Date(),
+      })
+      // Si es exitosa, navega al home
       navigate('/')
     } catch (err) {
-      // Si el usuario no existe, redirige a signup
-      if (err.code === 'auth/user-not-found') {
-        navigate('/signup', { state: { email } })
+      // Si el email ya existe
+      if (err.code === 'auth/email-already-in-use') {
+        setError('Este correo ya está registrado. Intenta iniciar sesión')
         return
       }
-      // Si la contraseña es incorrecta
-      if (err.code === 'auth/wrong-password') {
-        setError('Contraseña incorrecta')
+      // Si el email es inválido
+      if (err.code === 'auth/invalid-email') {
+        setError('El correo no es válido')
         return
       }
       // Otros errores
-      setError(err.message || 'Error al iniciar sesión')
+      setError(err.message || 'Error creando la cuenta')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignUp = async () => {
     setError(null)
     setLoading(true)
 
@@ -53,7 +74,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, googleProvider)
       const user = result.user
 
-      // Guardar/actualizar datos en Firestore
+      // Guardar datos en Firestore si es nuevo usuario
       const userRef = doc(db, 'users', user.uid)
       const nameParts = user.displayName?.split(' ') || ['User']
       
@@ -65,14 +86,14 @@ const Login = () => {
           email: user.email,
           photoURL: user.photoURL || null,
           uid: user.uid,
+          createdAt: new Date(),
         },
         { merge: true }
       )
-
       // Si es exitoso, navega al home
       navigate('/')
     } catch (err) {
-      setError(err.message || 'Error al iniciar sesión con Google')
+      setError(err.message || 'Error al registrarse con Google')
     } finally {
       setLoading(false)
     }
@@ -81,9 +102,23 @@ const Login = () => {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
       <div className='bg-white p-8 rounded-lg shadow-md w-96'>
-        <h1 className='text-2xl font-bold mb-6 text-center'>Iniciar Sesión</h1>
+        <h1 className='text-2xl font-bold mb-6 text-center'>Crear Cuenta</h1>
         {error && <div className='text-red-500 mb-4 p-2 bg-red-100 rounded'>{error}</div>}
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+          <input
+            type='text'
+            placeholder='Nombre'
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
+          />
+          <input
+            type='text'
+            placeholder='Apellido'
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
+          />
           <input
             type='email'
             placeholder='Correo electrónico'
@@ -93,7 +128,7 @@ const Login = () => {
           />
           <input
             type='password'
-            placeholder='Contraseña'
+            placeholder='Contraseña (mín. 6 caracteres)'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
@@ -101,15 +136,15 @@ const Login = () => {
           <button
             type='submit'
             disabled={loading}
-            className='bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+            className='bg-green-600 text-white py-2 rounded-md hover:bg-green-700 font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
           >
-            {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            {loading ? 'Cargando...' : 'Crear cuenta'}
           </button>
         </form>
 
         <div className='mt-4'>
           <button
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignUp}
             disabled={loading}
             type='button'
             className='flex items-center justify-center py-2 px-4 bg-white hover:bg-gray-200 text-gray-700 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg cursor-pointer border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'
@@ -130,21 +165,19 @@ const Login = () => {
                 fill='#2196F3'
               ></path>
             </svg>
-            <span>{loading ? 'Cargando...' : 'Iniciar con Google'}</span>
+            <span>{loading ? 'Cargando...' : 'Registrate con Google'}</span>
           </button>
         </div>
 
-        <div className='mt-4 flex flex-col gap-2'>
-          <button
-            onClick={() => navigate('/signup', { state: { email } })}
-            className='w-full text-blue-500 hover:text-blue-700 text-sm cursor-pointer'
-          >
-            ¿No tienes cuenta? Crear cuenta
-          </button>
-        </div>
+        <button
+          onClick={() => navigate('/login', { state: { email } })}
+          className='mt-4 w-full text-blue-500 hover:text-blue-700 text-sm cursor-pointer'
+        >
+          ← ¿Ya tienes cuenta? Iniciar sesión
+        </button>
       </div>
     </div>
   )
 }
 
-export default Login
+export default Signup
