@@ -8,6 +8,8 @@ import Profile from './pages/Profile'
 import NuevoReporte from './pages/NuevoReporte'
 import Publicaciones from './pages/Publicaciones'
 import QuienesSomos from './pages/QuienesSomos'
+import MisReportes from './pages/MisReportes'
+import EditarReporte from './pages/EditarReporte'
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/nuevo-reporte" element={<NuevoReporte />} />
         <Route path="/publicaciones" element={<Publicaciones />} />
         <Route path="/quienes-somos" element={<QuienesSomos />} />
+        <Route path="/mis-reportes" element={<MisReportes />} />
+        <Route path="/editar-reporte/:id" element={<EditarReporte />} />
       </Routes>
       <Footer/>
     </>
