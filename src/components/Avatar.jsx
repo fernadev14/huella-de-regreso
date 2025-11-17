@@ -5,6 +5,12 @@ const Avatar = ({ photoURL, firstName, size = 'md' }) => {
     lg: 'w-16 h-16 text-2xl',
   }
 
+  const sizeCssName = {
+    sm: 'avatar-sm',
+    md: 'avatar-md',
+    lg: 'avatar-lg',
+  }
+
   const getInitial = () => {
     return firstName?.charAt(0).toUpperCase() || 'U'
   }
@@ -14,14 +20,14 @@ const Avatar = ({ photoURL, firstName, size = 'md' }) => {
       <img
         src={photoURL}
         alt="Avatar"
-        className={`${sizeClasses[size]} rounded-full object-cover`}
+        className={`${sizeClasses[size]} rounded-full object-cover ${sizeCssName[size]}`}
       />
     )
   }
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full bg-blue-500 text-white flex items-center justify-center font-bold`}
+      className={`${sizeClasses[size]} rounded-full bg-blue-500 text-white flex items-center justify-center font-bold ${sizeCssName[size]}`}
     >
       {getInitial()}
     </div>

@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Rules for pets collection
+    match /pets/{petId} {
+      // Allow anyone to read (list/get)
+      allow read: if true;
+
+      // Create only if authenticated and the provided authorUid matches the caller
+      allow create: if request.auth != null
+                    && request.resource.data.authorUid == request.auth.uid
+                    && request.resource.data.authorUid is string;
+
+      // Update and delete only if authenticated and the existing document authorUid matches the caller
+      allow update, delete: if request.auth != null
+                            && resource.data.authorUid == request.auth.uid;
+    }
+
+    // Minimal restrictions for users collection: a user can read and write their own profile
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Default deny for all other documents
+    match /{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}

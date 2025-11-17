@@ -1,0 +1,137 @@
+/* Responsive adjustments for mobile devices */
+
+/* General page padding on small screens */
+@media (max-width: 768px) {
+  .max-w-6xl {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Header: stack logo and nav, reduce height */
+  /* Force header layout to stack vertically and center on small screens */
+  .header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    height: auto !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .header > nav {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .header nav ul {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .header nav ul a,
+  .header nav ul li,
+  .header nav ul a:link {
+    width: 100% !important;
+    text-align: left !important;
+    padding-left: 0.5rem !important;
+  }
+
+  .header .w-33 img {
+    max-width: 160px;
+    height: auto;
+  }
+
+  /* Mobile menu panel styling */
+  .mobile-menu {
+    background: #ffffff;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .mobile-menu a, .mobile-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  /* Mobile user info (avatar + name) shown at top of mobile menu */
+  .mobile-user-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 0.75rem !important;
+    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  }
+
+  .mobile-user-info .avatar-md {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 9999px !important;
+    object-fit: cover !important;
+  }
+
+  /* Banner adjustments */
+  .banner { padding: 2.5rem 1rem !important; }
+  .banner .hero-text { font-size: 1.125rem !important; text-align: center !important; }
+  .banner .hero-cta { display: flex !important; justify-content: center !important; margin-top: 0.75rem !important; }
+
+  /* Four steps: stack vertically on small screens */
+  .four-steps { display: grid !important; grid-template-columns: 1fr !important; gap: 1rem !important; padding: 1rem !important; }
+  .four-steps .step { text-align: center !important; }
+
+  /* Help cards: single column */
+  .help-cards { grid-template-columns: 1fr !important; }
+
+  /* FAQ spacing */
+  .faq-list { padding: 0 1rem !important; }
+
+  /* Footer: stack sections */
+  .site-footer { padding: 2rem 1rem !important; }
+  .footer-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+
+  /* Make top action buttons wrap and shrink */
+  .header .flex.gap-4.items-center {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Grids: ensure single column on small screens */
+  .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Cards: make images adapt */
+  .h-48 { height: 220px !important; }
+
+  /* Modal full screen */
+  .fixed.inset-0 { padding: 0.5rem !important; }
+  .fixed.inset-0 .max-w-4xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    border-radius: 0.5rem !important;
+    overflow: auto !important;
+  }
+
+  /* Forms: full width inputs */
+  form .grid.grid-cols-2 { grid-template-columns: 1fr !important; gap: 0.5rem !important; }
+
+  /* Make footer stack */
+  footer { padding: 1.25rem 1rem !important; }
+}
+
+/* Extra small phones */
+@media (max-width: 420px) {
+  .h-48 { height: 180px !important; }
+  .step-item { width: 100% !important; padding: 14px 16px !important; }
+  .header .w-33 img { max-width: 140px; }
+}
+
+/* Utility: ensure images in cards are not cropped awkwardly */
+.card-img-cover img, .rounded.overflow-hidden img { object-fit: cover; width: 100%; height: 100%; }
