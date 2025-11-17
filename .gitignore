@@ -7,6 +7,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+.firebase/*
+
 .env
 CLOUDINARY_FIRESTORE_SETUP.md
 FIREBASE_SETUP.md
