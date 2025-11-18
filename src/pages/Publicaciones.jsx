@@ -258,20 +258,20 @@ const estadoBadge = (estado = "") => {
         {/* Modal */}
         {selected && (
           <div className='fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4'>
-            <div className='bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto'>
+            <div className='container-modal bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto'>
               <div className='flex justify-between items-start mb-4'>
                 <h2 className='text-2xl font-bold'>{selected.title}</h2>
                 <button onClick={()=>{ setSelected(null); setSelectedIndex(0) }} className='text-gray-600'>Cerrar ✕</button>
               </div>
 
-              <div className='md:flex md:gap-6'>
-                <div className='md:w-2/3'>
-                  <div className='relative'>
-                    <div className='h-96 bg-gray-100 rounded overflow-hidden flex items-center justify-center'>
+              <div className='container-modal-all md:flex md:gap-6'>
+                <div className='image-container md:w-2/3'>
+                  <div className='div-photo-first relative'>
+                    <div className='first-image-large h-96 bg-gray-100 rounded overflow-hidden flex items-center justify-center'>
                       {selected.photoURLs && selected.photoURLs.length ? (
                         <img src={selected.photoURLs[selectedIndex]} alt='' className='w-full h-full object-cover' />
                       ) : (
-                        <div className='text-gray-400'>No image</div>
+                        <div className='text-gray-400'>No hay imagenes para mostrar</div>
                       )}
                     </div>
 
@@ -284,25 +284,25 @@ const estadoBadge = (estado = "") => {
                   </div>
 
                   {/* thumbnails */}
-                  <div className='flex gap-2 mt-3 overflow-x-auto'>
+                  <div className='thumbnails flex gap-2 mt-3 overflow-x-auto'>
                     {(selected.photoURLs || []).map((u, i) => (
-                      <button key={i} onClick={()=>setSelectedIndex(i)} className={`h-20 w-28 rounded overflow-hidden border ${i===selectedIndex? 'border-yellow-400':'border-transparent'}`}>
+                      <button key={i} onClick={()=>setSelectedIndex(i)} className={`btn-image-thumbnails h-20 w-28 rounded overflow-hidden border ${i===selectedIndex? 'border-yellow-400':'border-transparent'}`}>
                         <img src={u} className='h-full w-full object-cover' alt={`thumb-${i}`} />
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className='md:w-1/3 mt-4 md:mt-0'>
-                  <p className='mb-2'><strong>Ubicación:</strong> {selected.city}{selected.barrio ? `, ${selected.barrio}` : ''}</p>
-                  <p className='mb-2'>
-                    <strong>Estado:</strong>{" "}
+                <div className='div-description md:w-1/3 mt-4 md:mt-0'>
+                  <p className='mb-2'><strong className='description-title'>Ubicación:</strong> {selected.city}{selected.barrio ? `, ${selected.barrio}` : ''}</p>
+                  <p className='estado-modal mb-2'>
+                    <strong className='description-title'>Estado:</strong>{" "}
                     <span className={`inline-block px-2 py-1 rounded font-semibold ${estadoBadge(selected.estado)}`}>
                       {selected.estado}
                     </span>
                   </p>
-                  <p className='mb-2'><strong>Descripción:</strong><br/>{selected.description}</p>
-                  <p className='mb-2'><strong>Contacto:</strong> {selected.contact}</p>
+                  <p className='mb-2'><strong className='description-title'>Descripción:</strong><br/>{selected.description}</p>
+                  <p className='mb-2'><strong className='description-title'>Contacto:</strong> {selected.contact}</p>
                   <p className='text-sm text-gray-500 mt-4'>Publicado por: {selected.authorName}</p>
                 </div>
               </div>
