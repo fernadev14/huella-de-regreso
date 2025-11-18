@@ -1,4 +1,4 @@
-import React from 'react'
+import "../../styles/responsive.css"
 
 const Faq = () => {
     const FAQS = [
@@ -30,7 +30,7 @@ const Faq = () => {
   return (
     <>
         <section className="bg-[#D9D9D9] py-14 mt-20">
-            <div className="mx-auto w-full max-w-5xl px-6">
+            <div className="container-faq mx-auto w-full max-w-5xl px-6">
                 <h3 className="mb-8 text-center text-3xl font-bold text-[#2b2b2b] sm:text-4xl">
                 Preguntas frecuentes
                 </h3>

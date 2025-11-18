@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { collection, onSnapshot, query, orderBy, where, limit, startAfter, getDocs } from 'firebase/firestore'
 import { db } from '../config/firebase'
+import "../styles/responsive.css";
 
 const Publicaciones = () => {
   const [reports, setReports] = useState([])
@@ -11,6 +12,7 @@ const Publicaciones = () => {
   const [cityFilter, setCityFilter] = useState('')
   const [barrioFilter, setBarrioFilter] = useState('')
   const [estadoFilter, setEstadoFilter] = useState('')
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [selected, setSelected] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -135,37 +137,94 @@ const estadoBadge = (estado = "") => {
       <div className='max-w-6xl mx-auto px-4'>
         <h1 className='text-3xl font-bold mb-6'>Publicaciones</h1>
         
-        {/* Entrada de búsqueda */}
-        <div className='mb-6'>
-          <input 
-            type='text' 
-            placeholder='Buscar por nombre, ciudad, barrio o descripción...' 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-yellow-400'
-          />
-        </div>
-        
-        <div className='flex gap-3 mb-6 items-center'>
-          <div className='flex items-center gap-2'>
-            <span className='font-semibold mr-2'>Filtros</span>
-            <select value={cityFilter} onChange={(e)=>setCityFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
-              <option value=''>Ciudad</option>
-              {cities.map(c => <option key={c} value={c}>{c}</option>)}
+        <div className='container-search'>
+            {/* Entrada de búsqueda */}
+            <div className='mb-6'>
+            <input 
+                type='text' 
+                placeholder='Buscar por nombre, ciudad, barrio o descripción...' 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-yellow-400'
+            />
+            </div>
+            
+            {/* FILTROS ESCRITORIO */}
+            <div className='container-filter-desktop flex gap-3 mb-6 items-center'>
+            <div className='flex items-center gap-2'>
+                <span className='font-semibold mr-2'>Filtros</span>
+                <select value={cityFilter} onChange={(e)=>setCityFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
+                <option value=''>Ciudad</option>
+                {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+            </div>
+
+            <select value={barrioFilter} onChange={(e)=>setBarrioFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
+                <option value=''>Barrio</option>
+                {barrios.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
-          </div>
 
-          <select value={barrioFilter} onChange={(e)=>setBarrioFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
-            <option value=''>Barrio</option>
-            {barrios.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
+            <select value={estadoFilter} onChange={(e)=>setEstadoFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
+                <option value=''>Estado</option>
+                {estados.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
 
-          <select value={estadoFilter} onChange={(e)=>setEstadoFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
-            <option value=''>Estado</option>
-            {estados.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+            <button onClick={()=>{setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}} className='px-3 py-2 rounded border'>
+                Limpiar
+            </button>
+            </div>
 
-          <button onClick={()=>{setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}} className='px-3 py-2 rounded border'>Limpiar</button>
+            {/* ============ FILTROS MÓVIL ============ */}
+            <div className='container-filter-mobile mb-6'>
+                {/* Trigger compacto */}
+                <button
+                    type='button'
+                    className='w-full flex items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-2'
+                    onClick={()=>setMobileFiltersOpen(o => !o)}
+                    aria-expanded={mobileFiltersOpen}
+                    aria-controls='mobile-filters-panel'
+                >
+                    <span className='font-semibold'>Filtros</span>
+                    {/* icono embudo + chevron */}
+                    <span className='flex items-center gap-2'>
+                    {/* Embudo */}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    {/* Chevron */}
+                    <svg className={`h-5 w-5 transition-transform ${mobileFiltersOpen ? 'rotate-90' : ''}`} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6.293 2.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L11.586 10 6.293 4.707a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
+                    </span>
+                </button>
+
+                {/* Panel con animación */}
+                <div
+                    id='mobile-filters-panel'
+                    className={`mobile-filters-panel ${mobileFiltersOpen ? 'open' : ''}`}
+                >
+                    <div className='grid grid-cols-1 gap-3'>
+                    <select value={cityFilter} onChange={(e)=>setCityFilter(e.target.value)} 
+                    className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
+                        <option value=''>Ciudad</option>
+                        {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+
+                    <select value={barrioFilter} onChange={(e)=>setBarrioFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
+                        <option value=''>Barrio</option>
+                        {barrios.map(b => <option key={b} value={b}>{b}</option>)}
+                    </select>
+
+                    <select value={estadoFilter} onChange={(e)=>setEstadoFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
+                        <option value=''>Estado</option>
+                        {estados.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+
+                    <button
+                        onClick={()=>{setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}}
+                        className='px-3 py-2 rounded border w-full'
+                    >
+                        Limpiar
+                    </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {loading && <div>Cargando publicaciones...</div>}

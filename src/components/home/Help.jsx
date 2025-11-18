@@ -1,6 +1,7 @@
 import iconForm from "../../assets/icon_form1.png";
 import iconNotification from "../../assets/icon_notificacion.png";
 import iconEncuentro from "../../assets/icon_reencuentro.png";
+import "../../styles/responsive.css";
 
 const Help = () => {
   return (
@@ -8,7 +9,7 @@ const Help = () => {
       <div className='help-container'>
         <h3 className='text-center mt-20 text-4xl'>¿Cómo te ayudamos?</h3>
 
-        <div className="flex justify-center mt-14">
+        <div className="help-first flex justify-center mt-14">
           <div className="flex flex-col items-center mr-50">
             <img src={iconForm} alt="icon-form" className="w-fit"/>
             <div>
@@ -30,7 +31,7 @@ const Help = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center mt-12">
+        <div className="help-second flex flex-col items-center mt-12">
             <img src={iconEncuentro} alt="icon-encuentro" className="w-fit"/>
             <div>
               <h3 className="text-2xl">Conecta con quien la encuentrea</h3>

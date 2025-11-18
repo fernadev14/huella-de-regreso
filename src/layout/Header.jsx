@@ -25,6 +25,13 @@ const Header = () => {
     }
   }
 
+   // Bloquear scroll cuando el menú móvil está abierto
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
   return (
     <>
         <header className='w-full bg-[#F5F5F5] header'>
@@ -36,7 +43,7 @@ const Header = () => {
             </div>
 
             {/* Desktop nav */}
-            <nav className='hidden md:flex items-center gap-8'>
+            <nav className='hidden lg:flex items-center gap-8'>
               <ul className='flex gap-8 text-lg items-center'>
                 <Link to="/"><li className='cursor-pointer'>Inicio</li></Link>
                 <Link to="/quienes-somos"><li className='cursor-pointer'>Quiénes somos</li></Link>
@@ -45,7 +52,7 @@ const Header = () => {
             </nav>
 
             {/* Actions - desktop */}
-            <div className='hidden md:flex items-center gap-4'>
+            <div className='hidden lg:flex items-center gap-4'>
               <Link to="/nuevo-reporte" className='bg-[#FFD54F] text-[#333333] py-2 px-4 rounded-md flex items-center gap-2'>
                 <img src={plusSVG} alt="icon-plusSVG" className='w-5' />
                 <span className='font-semibold'>Nuevo reporte</span>
@@ -71,8 +78,10 @@ const Header = () => {
               )}
             </div>
 
+
+
             {/* Mobile actions: hamburger */}
-            <div className='md:hidden flex items-center gap-3'>
+            <div className='menu-burger lg:hidden flex items-center gap-3'>
               <button onClick={() => setMobileOpen(!mobileOpen)} aria-label='Abrir menú' className='p-2 rounded-md border'>
                 {mobileOpen ? (
                   <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
@@ -87,41 +96,76 @@ const Header = () => {
             </div>
           </div>
 
+
+
           {/* Mobile menu panel */}
-          {mobileOpen && (
-            <div className='md:hidden bg-white border-t border-gray-200 shadow-sm'>
-              <div className='px-4 pt-4 pb-6 space-y-3'>
-                <div className='flex flex-col gap-2'>
-                  <Link to='/' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Inicio</Link>
-                  <Link to='/quienes-somos' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Quiénes somos</Link>
-                  <Link to='/publicaciones' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Publicaciones</Link>
-                </div>
-
-                <div className='pt-2 border-t border-gray-100'>
-                  <Link to='/nuevo-reporte' onClick={() => setMobileOpen(false)} className='block bg-[#FFD54F] text-[#333] py-2 px-3 rounded-md text-center'>+ Nuevo reporte</Link>
-                </div>
-
-                <div className='pt-2 border-t border-gray-100'>
-                  {user ? (
-                    <>
-                      <div className='flex items-center gap-3 py-2 px-3'>
-                        <Avatar photoURL={userData?.photoURL} firstName={userData?.firstName} size='md' />
-                        <div>
-                          <div className='font-semibold'>{userData?.firstName || userData?.email?.split('@')[0]}</div>
-                          <div className='text-xs text-gray-500'>{userData?.email}</div>
+          <div
+            className={`mobile-backdrop lg:hidden ${mobileOpen ? 'open' : ''}`}
+            onClick={() => setMobileOpen(false)}
+          />
+                      
+          {/* Drawer móvil SIEMPRE montado */}
+          <div className={`container-menu-profile-primary lg:hidden ${mobileOpen ? 'open' : ''}`}>
+            {/* ...contenido del menú... */}
+            {mobileOpen && (
+                <div className='lg:hidden bg-white border-t border-gray-200 shadow-sm'>
+                <div className='px-4 pt-4 pb-6 space-y-3'>
+                    <div className="container-menu-primary justify-around items-center flex">
+                        <div className='menu-primary justify-around gap-2'>
+                        <Link to='/' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Inicio</Link>
+                        <Link to='/quienes-somos' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Quiénes somos</Link>
+                        <Link to='/publicaciones' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Publicaciones</Link>
                         </div>
-                      </div>
-                      <Link to='/mis-reportes' onClick={() => setMobileOpen(false)} className='block py-2 px-3 rounded hover:bg-gray-50'>📋 Mis Reportes</Link>
-                      <Link to='/profile' onClick={() => setMobileOpen(false)} className='block py-2 px-3 rounded hover:bg-gray-50'>👤 Editar Perfil</Link>
-                      <button onClick={() => { handleLogout(); setMobileOpen(false); }} className='w-full text-left py-2 px-3 text-red-600'>🚪 Cerrar Sesión</button>
-                    </>
-                  ) : (
-                    <Link to='/login' onClick={() => setMobileOpen(false)} className='block py-2 px-3 rounded hover:bg-gray-50'>Cuenta</Link>
-                  )}
+                        {/* BOTON NUEVO REPORTE */}
+                        <div className='border-t border-gray-100'>
+                        <Link to='/nuevo-reporte' onClick={() => setMobileOpen(false)} 
+                                className='block bg-[#FFD54F] text-[#333] py-2 px-3 rounded-md text-center'>
+                            + Nuevo reporte
+                        </Link>
+                        </div>
+                    </div>
+
+
+                    <div className='pt-10 border-t border-gray-100'>
+                    {user ? (
+                        <div className="menu-prifile flex justify-around items-start">
+                        <div className='flex items-center gap-3 py-2 px-3'>
+                            <Avatar photoURL={userData?.photoURL} firstName={userData?.firstName} size='md' />
+                            <div>
+                            <div className='font-semibold'>{userData?.firstName || userData?.email?.split('@')[0]}</div>
+                            <div className='text-xs text-gray-500'>{userData?.email}</div>
+                            </div>
+                        </div>
+
+                        {/* BOTONES PERFIL */}
+                        <div className="btn-menu-profile">
+                            <Link to='/mis-reportes' 
+                                    onClick={() => setMobileOpen(false)} 
+                                    className='block py-2 px-3 rounded hover:bg-gray-50'>
+                                        📋 Mis Reportes
+                                </Link>
+                            <Link to='/profile' 
+                                    onClick={() => setMobileOpen(false)} 
+                                    className='block py-2 px-3 rounded hover:bg-gray-50'>
+                                        👤 Editar Perfil
+                            </Link>
+                            <button onClick={() => { handleLogout(); setMobileOpen(false); }} className='w-full text-left py-2 px-3 text-red-600'>
+                                🚪 Cerrar Sesión
+                            </button>
+                        </div>
+                        </div>
+                    ) : (
+                        <Link to='/login' 
+                            onClick={() => setMobileOpen(false)} 
+                            className='block py-2 px-3 rounded hover:bg-gray-50'>
+                                Cuenta
+                        </Link>
+                    )}
+                    </div>
                 </div>
-              </div>
-            </div>
-          )}
+                </div>
+            )}
+          </div>
         </header>
     </>
   )

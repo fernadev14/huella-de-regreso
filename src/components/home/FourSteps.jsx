@@ -1,15 +1,18 @@
 import imgDogAnimate from "../../assets/perrito animado-4-pasos.png";
+import "../../styles/responsive.css"
 
 const FourSteps = () => {
   return (
     <>
-        <h5 className="text-4xl text-center mt-20">4 pasos para encontrar a tu mascota</h5>
-        <div className="flex mt-20 justify-around">
-            <img 
-                src={imgDogAnimate} 
-                alt="perrito animado-4-pasos" 
-                className="h-[400px] -mr-80"
-            />
+        <h5 className="title-fourSteps text-4xl text-center mt-20">4 pasos para encontrar a tu mascota</h5>
+        <div className="Container-fourSteps flex mt-20 justify-around">
+            <div className="img-fourSteps">
+                <img 
+                    src={imgDogAnimate} 
+                    alt="perrito animado-4-pasos" 
+                    className="h-[400px] -mr-80"
+                />
+            </div>
 
             <ul className="flex flex-col gap-4">
                 <li className="step-item">

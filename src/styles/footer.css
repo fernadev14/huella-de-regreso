@@ -11,3 +11,45 @@ footer {
 .info a li {
     margin-bottom: 10px;
 }
+
+@media screen and (max-width:1024px) {
+    .container-info {
+        flex-direction: column-reverse;
+    }
+    .container-info section {
+        margin-top: 40px;
+    }
+    .container-info section:nth-child(2) {
+        margin-left: 0;
+    }
+    .container-info section:nth-child(1) {
+        margin-bottom: 40px;
+    }
+    .container-info section > div:nth-child(1) {
+        margin-bottom: 40px;
+    }
+    .container-info section h4 {
+        font-size: 1.2em;
+    }
+    .container-info section:nth-child(2) img {
+        width: 40px;
+    }
+    .section-img-footer {
+        width: 400px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .container-info section h4 {
+        font-size: 0.8em;
+    }
+    .container-info section a {
+        font-size: 0.5em;
+    }
+    .section-img-footer {
+        width: 200px;
+    }
+    .container-info section:nth-child(2) img {
+        width: 30px;
+    }
+} 

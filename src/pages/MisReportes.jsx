@@ -181,7 +181,7 @@ const MisReportes = () => {
                     )}
                   </div>
 
-                  {/* thumbnails */}
+                  {/* miniaturas */}
                   <div className='flex gap-2 mt-3 overflow-x-auto'>
                     {(selected.photoURLs || []).map((u, i) => (
                       <button key={i} onClick={() => setSelectedIndex(i)} className={`h-20 w-28 rounded overflow-hidden border ${i === selectedIndex ? 'border-yellow-400' : 'border-transparent'}`}>
