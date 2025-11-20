@@ -12,6 +12,13 @@ const MisReportes = () => {
   const [selected, setSelected] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const unsubscribeRef = useRef(null)
+  const [activeId, setActiveId] = useState(null);
+  const isTouchRef = useRef(false);
+
+  useEffect(() => {
+    // true en móviles/tablets táctiles
+    isTouchRef.current = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -105,33 +112,60 @@ const MisReportes = () => {
           </div>
         )}
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
+        <div 
+            className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'
+            onClick={() => { if (isTouchRef.current && activeId) setActiveId(null); }}
+        >
           {reports.map(r => (
             <div key={r.id} className='bg-white rounded shadow p-3 cursor-pointer hover:shadow-lg transition'>
-              <div className='h-48 w-full overflow-hidden rounded mb-3 bg-gray-200 flex items-center justify-center relative group'>
+              <div 
+                    className='h-48 w-full overflow-hidden rounded mb-3 bg-gray-200 flex items-center 
+                    justify-center relative group select-none'
+                    onClick={(e) => {
+                      // solo togglear en táctiles para no romper el click de desktop
+                      if (isTouchRef.current) {
+                        // si ya hay overlay abierto y el click vino desde un botón, no cierres
+                        const tag = (e.target.tagName || '').toLowerCase();
+                        if (['button','a'].includes(tag)) return;
+                        setActiveId(prev => (prev === r.id ? null : r.id));
+                      }
+                    }}
+              >
                 {r.photoURLs && r.photoURLs[0] ? (
                   <img src={r.photoURLs[0]} alt={r.title} className='h-full w-full object-cover' />
                 ) : (
                   <div className='text-gray-400'>Sin imagen</div>
                 )}
 
-                {/* Overlay con botones */}
-                <div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100'>
+                {/* Overlay con botones - visible en móvil, con hover en desktop */}
+                <div 
+                    className={[
+                      "absolute inset-0 flex items-center justify-center gap-2 transition",
+                      // Desktop: aparece con hover
+                      "md:opacity-0 md:group-hover:opacity-100",
+                      "md:group-hover:bg-white/20 md:group-hover:backdrop-blur-sm md:group-hover:backdrop-saturate-150",
+                      // Móviles: aparece si activeId === r.id
+                      (activeId === r.id) ? "opacity-100 backdrop-blur-sm backdrop-saturate-150 bg-white/20" : "opacity-0",
+                      // Para que los botones reciban eventos solo cuando visible en móvil
+                      (activeId === r.id) ? "pointer-events-auto" : "pointer-events-none md:pointer-events-auto",
+                    ].join(' ')}
+                    onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     onClick={() => setSelected(r)}
-                    className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm'
+                    className='bg-blue-500/90 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm shadow cursor-pointer'
                   >
                     Ver
                   </button>
                   <Link
                     to={`/editar-reporte/${r.id}`}
-                    className='bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm'
+                    className='bg-yellow-500/90 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm shadow'
                   >
                     Editar
                   </Link>
                   <button
-                    onClick={() => handleDelete(r.id)}
-                    className='bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm'
+                    onClick={(e) => { e.stopPropagation(); handleDelete(r.id); }}
+                    className='bg-red-500/90 hover:bg-red-600 text-white px-3 py-2 rounded text-sm shadow cursor-pointer'
                   >
                     Eliminar
                   </button>

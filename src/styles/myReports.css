@@ -1,0 +1,3 @@
+@media (hover: none) and (pointer: coarse) {
+  .group:hover .md\:group-hover\:opacity-100 { opacity: 0 !important; }
+}
