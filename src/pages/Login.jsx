@@ -3,10 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, googleProvider, db } from '../config/firebase'
+import SVGGoogleIcon from "../components/SVG/GoogleIcon.jsx"
+import SlideInfo from '../components/newReport/SlideInfo.jsx'
 
 const Login = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/'
   const prefill = location.state?.email || ''
 
   const [email, setEmail] = useState(prefill)
@@ -26,7 +29,7 @@ const Login = () => {
       // Intenta iniciar sesión con Firebase
       await signInWithEmailAndPassword(auth, email, password)
       // Si es exitoso, navega al home
-      navigate('/')
+      navigate(from, { replace: true })
     } catch (err) {
       // Si el usuario no existe, redirige a signup
       if (err.code === 'auth/user-not-found') {
@@ -70,7 +73,7 @@ const Login = () => {
       )
 
       // Si es exitoso, navega al home
-      navigate('/')
+      navigate(from, { replace: true })
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión con Google')
     } finally {
@@ -79,70 +82,77 @@ const Login = () => {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
-      <div className='bg-white p-8 rounded-lg shadow-md w-96'>
-        <h1 className='text-2xl font-bold mb-6 text-center'>Iniciar Sesión</h1>
-        {error && <div className='text-red-500 mb-4 p-2 bg-red-100 rounded'>{error}</div>}
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <input
-            type='email'
-            placeholder='Correo electrónico'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
-          />
-          <input
-            type='password'
-            placeholder='Contraseña'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
-          />
-          <button
-            type='submit'
-            disabled={loading}
-            className='bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-          >
-            {loading ? 'Cargando...' : 'Iniciar Sesión'}
-          </button>
-        </form>
+    <div className='flex flex-col-reverse md:flex-row-reverse min-h-screen'>
+      {/* LADO IZQUIERDO */}
+      <div className="md:w-1/2 bg-[#FFD54F] flex items-center justify-center py-5">
+        <SlideInfo />
+      </div>
 
-        <div className='mt-4'>
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-            type='button'
-            className='flex items-center justify-center py-2 px-4 bg-white hover:bg-gray-200 text-gray-700 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg cursor-pointer border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            <svg
-              viewBox='0 0 24 24'
-              height='20'
-              width='20'
-              xmlns='http://www.w3.org/2000/svg'
-              className='mr-2'
+      <div className='md:w-1/2 flex items-center justify-center bg-gray-100'>
+        <div className='bg-white p-8 rounded-lg shadow-md w-96'>
+          <h1 className='text-2xl font-bold mb-6 text-center'>Iniciar Sesión</h1>
+          {error && <div className='text-red-500 mb-4 p-2 bg-red-100 rounded'>{error}</div>}
+          <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+            <input
+              type='email'
+              placeholder='Correo electrónico'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
+            />
+            <input
+              type='password'
+              placeholder='Contraseña'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className='border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
+            />
+
+            {/* BUTTON LOGIN */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`cursor-pointer font-semibold overflow-hidden relative border border-red-500 px-8 py-2
+                          ${loading ? 'pointer-events-none opacity-60' : 'group'}
+                        `}
             >
-              <path
-                d='M12,5c1.6167603,0,3.1012573,0.5535278,4.2863159,1.4740601l3.637146-3.4699707 C17.8087769,1.1399536,15.0406494,0,12,0C7.392395,0,3.3966675,2.5999146,1.3858032,6.4098511l4.0444336,3.1929321 C6.4099731,6.9193726,8.977478,5,12,5z'
-                fill='#F44336'
-              ></path>
-              <path
-                d='M23.8960571,13.5018311C23.9585571,13.0101929,24,12.508667,24,12 c0-0.8578491-0.093689-1.6931763-0.2647705-2.5H12v5h6.4862061c-0.5247192,1.3637695-1.4589844,2.5177612-2.6481934,3.319458 l4.0594482,3.204834C22.0493774,19.135437,23.5219727,16.4903564,23.8960571,13.5018311z'
-                fill='#2196F3'
-              ></path>
-            </svg>
-            <span>{loading ? 'Cargando...' : 'Iniciar con Google'}</span>
-          </button>
-        </div>
+              <span className="relative z-10 text-red-500 group-hover:text-white text-xl duration-500">
+                {loading ? 'Cargando...' : 'Iniciar sesión'}
+              </span>
 
-        <div className='mt-4 flex flex-col gap-2'>
-          <button
-            onClick={() => navigate('/signup', { state: { email } })}
-            className='w-full text-blue-500 hover:text-blue-700 text-sm cursor-pointer'
-          >
-            ¿No tienes cuenta? Crear cuenta
-          </button>
+              <span className="absolute w-full h-full bg-red-500 -left-50 top-0 -rotate-45 group-hover:rotate-0 group-hover:left-0 duration-500"></span>
+              <span className="absolute w-full h-full bg-red-500 -right-50 top-0 -rotate-45 group-hover:rotate-0 group-hover:right-0 duration-500"></span>
+            </button>
+          </form>
+
+          {/* BUTTON GOOGLE LOGIN */}
+          <div className='mt-4'>
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              type='button'
+              className='flex items-center justify-center py-2 px-4 bg-white hover:bg-gray-200 text-gray-700 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg cursor-pointer border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                <SVGGoogleIcon />
+              )}
+              <span>{loading ? 'Cargando...' : 'Iniciar con Google'}</span>
+            </button>
+          </div>
+
+          <div className='mt-4 flex flex-col gap-2'>
+            <button
+              onClick={() => navigate('/signup', { state: { email } })}
+              className='w-full text-red-500 hover:text-red-700 text-sm cursor-pointer'
+            >
+              ¿No tienes cuenta? Crear cuenta
+            </button>
+          </div>
         </div>
       </div>
+      
     </div>
   )
 }

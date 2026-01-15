@@ -4,11 +4,14 @@ import { collection, addDoc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { AuthContext } from '../context/AuthContext'
 import { uploadToCloudinary } from '../config/cloudinary'
+// components
+import Login from './Login'
 
 const NuevoReporte = () => {
   const navigate = useNavigate()
   const { user, userData } = useContext(AuthContext)
 
+  // TODOS LOS HOOKS SIEMPRE SE EJECUTAN
   const [name, setName] = useState('')
   const [city, setCity] = useState('')
   const [barrio, setBarrio] = useState('')
@@ -26,11 +29,24 @@ const NuevoReporte = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  useEffect(() => {
+    const urls = images.map((f) => URL.createObjectURL(f))
+    setPreviews(urls)
+
+    return () => urls.forEach((u) => URL.revokeObjectURL(u))
+  }, [images])
+
+  useEffect(() => {
+  if (user) {
+    navigate('/nuevo-reporte')
+  }
+}, [user, navigate])
+
   if (!user) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-screen'>
-        <p className='mb-4'>Debes iniciar sesión para crear un reporte.</p>
-      </div>
+      <div>
+      <Login />
+    </div>
     )
   }
 
@@ -42,16 +58,6 @@ const NuevoReporte = () => {
     const nextFiles = [...images, ...files].slice(0, 4)
     setImages(nextFiles)
   }
-
-  useEffect(() => {
-    // generate previews
-    const urls = images.map((f) => URL.createObjectURL(f))
-    setPreviews(urls)
-
-    return () => {
-      urls.forEach((u) => URL.revokeObjectURL(u))
-    }
-  }, [images])
 
   const removeImage = (index) => {
     const next = images.filter((_, i) => i !== index)

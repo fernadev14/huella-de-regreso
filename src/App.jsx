@@ -11,22 +11,78 @@ import QuienesSomos from './pages/QuienesSomos'
 import MisReportes from './pages/MisReportes'
 import EditarReporte from './pages/EditarReporte'
 
+import ProtectedRoute from './routes/ProtectedRoute'
+import PublicRoute from './routes/PublicRoute'
+
 function App() {
   return (
     <>
-      <Header/>
+      <Header />
+
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/nuevo-reporte" element={<NuevoReporte />} />
+
+        {/* RUTAS SOLO PARA NO LOGUEADOS */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          }
+        />
+
+        {/* RUTAS PROTEGIDAS */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/nuevo-reporte"
+          element={
+            <ProtectedRoute>
+              <NuevoReporte />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mis-reportes"
+          element={
+            <ProtectedRoute>
+              <MisReportes />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/editar-reporte/:id"
+          element={
+            <ProtectedRoute>
+              <EditarReporte />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/publicaciones" element={<Publicaciones />} />
         <Route path="/quienes-somos" element={<QuienesSomos />} />
-        <Route path="/mis-reportes" element={<MisReportes />} />
-        <Route path="/editar-reporte/:id" element={<EditarReporte />} />
       </Routes>
-      <Footer/>
+
+      <Footer />
     </>
   )
 }

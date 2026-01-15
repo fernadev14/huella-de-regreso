@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser)
 
       if (currentUser) {
+        setUserData(null)
         try {
           const userDocRef = doc(db, 'users', currentUser.uid)
           const userDocSnap = await getDoc(userDocRef)
