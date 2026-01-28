@@ -4,6 +4,8 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { AuthContext } from '../context/AuthContext'
 import { uploadToCloudinary } from '../config/cloudinary'
+import locationsData from '../data/colombia-municipios.json'
+
 
 const EditarReporte = () => {
   const { id } = useParams()
@@ -11,6 +13,7 @@ const EditarReporte = () => {
   const { user } = useContext(AuthContext)
 
   const [name, setName] = useState('')
+  const [department, setDepartment] = useState('')
   const [city, setCity] = useState('')
   const [barrio, setBarrio] = useState('')
   const [estado, setEstado] = useState('perdida')
@@ -61,6 +64,12 @@ const EditarReporte = () => {
         // Llenar los campos
         setName(data.title || '')
         setCity(data.city || '')
+        // Detectar departamento automáticamente según la ciudad guardada
+        if (data.city) {
+          const deptFound = locationsData.find(d => d.ciudades.includes(data.city))
+          if (deptFound) setDepartment(deptFound.departamento)
+        }
+
         setBarrio(data.barrio || '')
         setEstado(data.estado || 'perdida')
         setDescription(data.description || '')
@@ -91,6 +100,14 @@ const EditarReporte = () => {
       urls.forEach((u) => URL.revokeObjectURL(u))
     }
   }, [images])
+
+  const departments = locationsData.map(d => d.departamento)
+
+  const getCitiesByDepartment = (dept) => {
+    const found = locationsData.find(d => d.departamento === dept)
+    return found ? found.ciudades : []
+  }
+
 
   const handleFiles = (e) => {
     const files = Array.from(e.target.files || [])
@@ -148,7 +165,7 @@ const EditarReporte = () => {
       setError('El nombre es requerido para mascotas perdidas')
       return
     }
-    if (!city.trim() || !contact.trim()) {
+    if (!department || !city || !contact.trim()) {
       setError('Ciudad y contacto son requeridos')
       return
     }
@@ -173,6 +190,7 @@ const EditarReporte = () => {
       // Actualizar documento
       await updateDoc(doc(db, 'pets', id), {
         title: name,
+        department,
         city,
         barrio,
         estado,
@@ -253,24 +271,34 @@ const EditarReporte = () => {
           {/* CIUDAD Y BARRIO */}
           <div className='grid grid-cols-2 gap-4 mb-4'>
             <div>
-              <label className='block font-bold mb-2'>Ciudad *</label>
-              <input
-                type='text'
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
+              <label className='block font-bold mb-2'>Departamento *</label>
+              <select
+                value={department}
+                onChange={(e) => {
+                  setDepartment(e.target.value)
+                  setCity('')
+                }}
                 className='w-full border rounded p-2'
-                placeholder='ej. Bogotá'
-              />
+              >
+                <option value="">Seleccione departamento</option>
+                {departments.map(dep => (
+                  <option key={dep} value={dep}>{dep}</option>
+                ))}
+              </select>
             </div>
             <div>
-              <label className='block font-bold mb-2'>Barrio</label>
-              <input
-                type='text'
-                value={barrio}
-                onChange={(e) => setBarrio(e.target.value)}
+              <label className='block font-bold mb-2'>Ciudad</label>
+              <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                disabled={!department}
                 className='w-full border rounded p-2'
-                placeholder='ej. La Candelaria'
-              />
+              >
+                <option value="">Seleccione ciudad</option>
+                {getCitiesByDepartment(department).map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
           </div>
 

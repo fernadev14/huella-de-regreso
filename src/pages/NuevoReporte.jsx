@@ -4,15 +4,21 @@ import { collection, addDoc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { AuthContext } from '../context/AuthContext'
 import { uploadToCloudinary } from '../config/cloudinary'
+// import { colombiaLocations } from '../data/LocationCO'
+import locationsData from '../data/colombia-municipios.json'
+
 // components
 import Login from './Login'
 
 const NuevoReporte = () => {
   const navigate = useNavigate()
   const { user, userData } = useContext(AuthContext)
+  const departments = locationsData.map(d => d.departamento);
+
 
   // TODOS LOS HOOKS SIEMPRE SE EJECUTAN
   const [name, setName] = useState('')
+  const [department, setDepartment] = useState('')
   const [city, setCity] = useState('')
   const [barrio, setBarrio] = useState('')
   const [estado, setEstado] = useState('perdida')
@@ -49,6 +55,11 @@ const NuevoReporte = () => {
     </div>
     )
   }
+
+  const getCitiesByDepartment = (dept) => {
+    const found = locationsData.find(d => d.departamento === dept);
+    return found ? found.ciudades : [];
+  };
 
   const handleFiles = (e) => {
     const files = Array.from(e.target.files || [])
@@ -94,7 +105,7 @@ const NuevoReporte = () => {
         return
       }
     }
-    if (!city.trim() || !contact.trim()) {
+    if (!department || !city.trim() || !contact.trim()) {
       setError('Ciudad y contacto son requeridos')
       return
     }
@@ -120,6 +131,7 @@ const NuevoReporte = () => {
         // Título: utilizar el nombre cuando se trate de perdida, y en caso contrario, un título descriptivo para encontrada.
         title: estado === 'perdida' ? name : `Mascota encontrada en ${city}${barrio ? ' - ' + barrio : ''}`,
         description,
+        department,
         city,
         barrio,
         estado,
@@ -167,8 +179,33 @@ const NuevoReporte = () => {
           )}
 
           <div>
-            <label className='block text-sm font-semibold mb-1'>Ciudad</label>
-            <input value={city} onChange={(e)=>setCity(e.target.value)} className='w-full border px-3 py-2 rounded' />
+            <label className='block text-sm font-semibold mb-1 mt-4'>Departamento</label>
+            <select
+              className="w-full border px-3 py-2 rounded"
+              value={department}
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  setCity('');
+                }}
+              >
+                <option value="">Seleccione departamento</option>
+                {departments.map(dep => (
+                  <option key={dep} value={dep}>{dep}</option>
+                ))}
+            </select>
+            
+            <label className='block text-sm font-semibold mb-1 mt-4'>Ciudad</label>
+            <select
+              className="w-full border px-3 py-2 rounded"
+              value={city}
+                onChange={(e) => setCity(e.target.value)}
+                disabled={!department}
+              >
+                <option value="">Seleccione ciudad</option>
+                {getCitiesByDepartment(department).map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+            </select>
           </div>
 
           <div>
