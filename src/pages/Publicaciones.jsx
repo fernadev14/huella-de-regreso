@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react'
 import { collection, onSnapshot, query, orderBy, where, limit, startAfter, getDocs } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import "../styles/responsive.css";
+import locationsData from '../data/colombia-municipios.json'
+
 
 const Publicaciones = () => {
   const [reports, setReports] = useState([])
@@ -9,6 +11,7 @@ const Publicaciones = () => {
   const [error, setError] = useState(null)
 
   // filtros
+  const [departmentFilter, setDepartmentFilter] = useState('')
   const [cityFilter, setCityFilter] = useState('')
   const [barrioFilter, setBarrioFilter] = useState('')
   const [estadoFilter, setEstadoFilter] = useState('')
@@ -42,9 +45,10 @@ const Publicaciones = () => {
     try {
       const constraints = []
       // Añadir filtros como cláusulas «where».
+      if (departmentFilter) constraints.push(where('department', '==', departmentFilter))
       if (cityFilter) constraints.push(where('city', '==', cityFilter))
-      if (barrioFilter) constraints.push(where('barrio', '==', barrioFilter))
       if (estadoFilter) constraints.push(where('estado', '==', estadoFilter))
+      if (barrioFilter) constraints.push(where('barrio', '==', barrioFilter))
 
       // orden y límite
       constraints.push(orderBy('createdAt', 'desc'))
@@ -72,12 +76,21 @@ const Publicaciones = () => {
       setError('Error inicializando feed')
       setLoading(false)
     }
-  }, [cityFilter, barrioFilter, estadoFilter, pageSize])
+  }, [departmentFilter, cityFilter, barrioFilter, estadoFilter, pageSize])
+
+  const departments = locationsData.map(d => d.departamento)
+
+  const getCitiesByDepartment = (dept) => {
+    const found = locationsData.find(d => d.departamento === dept)
+    return found ? found.ciudades : []
+  }
+
 
   const loadMore = async () => {
     if (!lastDoc) return
     try {
       const constraints = []
+      if (departmentFilter) constraints.push(where('department', '==', departmentFilter))
       if (cityFilter) constraints.push(where('city', '==', cityFilter))
       if (barrioFilter) constraints.push(where('barrio', '==', barrioFilter))
       if (estadoFilter) constraints.push(where('estado', '==', estadoFilter))
@@ -98,7 +111,6 @@ const Publicaciones = () => {
   }
 
   // Derivar opciones de filtro
-  const cities = Array.from(new Set(reports.map(r => r.city).filter(Boolean)))
   const barrios = Array.from(new Set(reports.map(r => r.barrio).filter(Boolean)))
   const estados = ['perdida', 'encontrada']
 
@@ -153,9 +165,30 @@ const estadoBadge = (estado = "") => {
             <div className='container-filter-desktop flex gap-3 mb-6 items-center'>
             <div className='flex items-center gap-2'>
                 <span className='font-semibold mr-2'>Filtros</span>
-                <select value={cityFilter} onChange={(e)=>setCityFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
-                <option value=''>Ciudad</option>
-                {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                <select
+                  value={departmentFilter}
+                  onChange={(e) => {
+                    setDepartmentFilter(e.target.value)
+                    setCityFilter('')
+                  }}
+                  className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
+                >
+                  <option value=''>Departamento</option>
+                  {departments.map(dep => (
+                    <option key={dep} value={dep}>{dep}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={cityFilter}
+                  onChange={(e)=>setCityFilter(e.target.value)}
+                  disabled={!departmentFilter}
+                  className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
+                >
+                  <option value=''>Ciudad</option>
+                  {getCitiesByDepartment(departmentFilter).map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
                 </select>
             </div>
 
@@ -200,10 +233,30 @@ const estadoBadge = (estado = "") => {
                     className={`mobile-filters-panel ${mobileFiltersOpen ? 'open' : ''}`}
                 >
                     <div className='grid grid-cols-1 gap-3'>
-                    <select value={cityFilter} onChange={(e)=>setCityFilter(e.target.value)} 
-                    className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
-                        <option value=''>Ciudad</option>
-                        {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                    <select
+                      value={departmentFilter}
+                      onChange={(e) => {
+                        setDepartmentFilter(e.target.value)
+                        setCityFilter('')
+                      }}
+                      className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
+                    >
+                      <option value=''>Departamento</option>
+                      {departments.map(dep => (
+                        <option key={dep} value={dep}>{dep}</option>
+                      ))}
+                    </select>
+                    
+                    <select
+                      value={cityFilter}
+                      onChange={(e)=>setCityFilter(e.target.value)}
+                      disabled={!departmentFilter}
+                      className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
+                    >
+                      <option value=''>Ciudad</option>
+                      {getCitiesByDepartment(departmentFilter).map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
                     </select>
 
                     <select value={barrioFilter} onChange={(e)=>setBarrioFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
@@ -217,7 +270,7 @@ const estadoBadge = (estado = "") => {
                     </select>
 
                     <button
-                        onClick={()=>{setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}}
+                        onClick={()=>{setDepartmentFilter(''), setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}}
                         className='px-3 py-2 rounded border w-full'
                     >
                         Limpiar
