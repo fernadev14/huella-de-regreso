@@ -4,11 +4,24 @@ import { db } from '../config/firebase'
 import "../styles/responsive.css";
 import locationsData from '../data/colombia-municipios.json'
 
+// SVG
+import LocationSVG from '../components/SVG/Location';
+import CardIcon from '../components/SVG/CardIcon';
+import PhoneIcon from '../components/SVG/PhoneIcon';
+
 
 const Publicaciones = () => {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Carousel
+  const [selected, setSelected] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const carouselRef = useRef(null)
+  const isHovering = useRef(false)
+  
+
 
   // filtros
   const [departmentFilter, setDepartmentFilter] = useState('')
@@ -17,8 +30,6 @@ const Publicaciones = () => {
   const [estadoFilter, setEstadoFilter] = useState('')
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const [selected, setSelected] = useState(null)
-  const [selectedIndex, setSelectedIndex] = useState(0)
   const [pageSize] = useState(9)
   const [lastDoc, setLastDoc] = useState(null)
   const [hasMore, setHasMore] = useState(false)
@@ -77,6 +88,29 @@ const Publicaciones = () => {
       setLoading(false)
     }
   }, [departmentFilter, cityFilter, barrioFilter, estadoFilter, pageSize])
+
+  // AUTOMOVIMIENTO CAROUSEL
+  useEffect(() => {
+    if (!selected?.photoURLs?.length) return
+
+    const interval = setInterval(() => {
+      if (isHovering.current) return
+
+      setSelectedIndex(prev =>
+        prev === selected.photoURLs.length - 1 ? 0 : prev + 1
+      )
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [selected])
+
+  useEffect(() => {
+    if (!carouselRef.current) return
+    const width = 112 + 8
+    carouselRef.current.style.transform = `translateX(-${selectedIndex * width}px)`
+  }, [selectedIndex])
+
+
 
   const departments = locationsData.map(d => d.departamento)
 
@@ -316,11 +350,15 @@ const estadoBadge = (estado = "") => {
 
         {/* Modal */}
         {selected && (
-          <div className='fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4'>
-            <div className='container-modal bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto'>
+          <div className='fixed inset-0 bg-[#000000c4] flex items-center justify-center z-50 p-4'>
+            <div className='container-modal bg-[#f9f9f9] w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto'>
               <div className='flex justify-between items-start mb-4'>
                 <h2 className='text-2xl font-bold'>{selected.title}</h2>
-                <button onClick={()=>{ setSelected(null); setSelectedIndex(0) }} className='text-gray-600'>Cerrar ✕</button>
+                <button 
+                    onClick={()=>{ setSelected(null); setSelectedIndex(0) }} 
+                    className='text-amber-50 bg-red-800 px-4 py-2 rounded-md cursor-pointer'>
+                  Cerrar ✕
+                </button>
               </div>
 
               <div className='container-modal-all md:flex md:gap-6'>
@@ -352,17 +390,77 @@ const estadoBadge = (estado = "") => {
                   </div>
                 </div>
 
-                <div className='div-description md:w-1/3 mt-4 md:mt-0'>
-                  <p className='mb-2'><strong className='description-title'>Ubicación:</strong> {selected.city}{selected.barrio ? `, ${selected.barrio}` : ''}</p>
+                <div className='div-description md:w-1/3 mt-4 md:mt-0 bg-[#ffffff] p-5 rounded-lg shadow-lg'>
                   <p className='estado-modal mb-2'>
-                    <strong className='description-title'>Estado:</strong>{" "}
                     <span className={`inline-block px-2 py-1 rounded font-semibold ${estadoBadge(selected.estado)}`}>
                       {selected.estado}
                     </span>
                   </p>
-                  <p className='mb-2'><strong className='description-title'>Descripción:</strong><br/>{selected.description}</p>
-                  <p className='mb-2'><strong className='description-title'>Contacto:</strong> {selected.contact}</p>
-                  <p className='text-sm text-gray-500 mt-4'>Publicado por: {selected.authorName}</p>
+                  <p className='mb-4 flex items-center'>
+                    <LocationSVG />
+                    <strong className='description-title mr-1'>
+                      Ubicación:
+                    </strong> {selected.city}{selected.barrio ? `, ${selected.barrio}` : ''}
+                  </p>
+                  <div className='flex'>
+                    <CardIcon />
+                    <strong className='description-title mr-2'>
+                      Descripción:
+                    </strong>
+                  </div>
+                  <p className='mb-4 -mt-5 ml-8 text-md'>
+                    <br/>{selected.description}
+                    </p>
+                  <p className='mb-4 flex'>
+                    <PhoneIcon />
+                    <strong className='description-title mr-2'>Contacto:</strong> {selected.contact}
+                  </p>
+
+                  <hr className='mt-10 text-gray-300'/>
+
+                  {/* CAROUSEL */}
+                  <div
+                    className="thumbnails overflow-hidden mt-3"
+                    onMouseEnter={() => (isHovering.current = true)}
+                    onMouseLeave={() => (isHovering.current = false)}
+                  >
+                    <div
+                      ref={carouselRef}
+                      className="flex gap-2 transition-transform duration-500 ease-in-out"
+                    >
+                      {(selected.photoURLs || []).map((u, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setSelectedIndex(i)
+                          }}
+                          className={`h-20 w-28 shrink-0 rounded overflow-hidden border ${
+                            i === selectedIndex ? "border-yellow-400" : "border-transparent"
+                          }`}
+                        >
+                          <img src={u} className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center gap-2 mt-4">
+                    {(selected.photoURLs || []).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setSelectedIndex(i)
+                        }}
+                        className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                          i === selectedIndex
+                            ? "bg-yellow-400 w-6"
+                            : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        aria-label={`Ir a imagen ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                  <p className='text-md text-gray-500 mt-6 w-full text-center'>Publicado por: {selected.authorName}</p>
                 </div>
               </div>
             </div>
