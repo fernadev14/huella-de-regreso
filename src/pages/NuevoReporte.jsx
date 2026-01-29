@@ -10,6 +10,18 @@ import locationsData from '../data/colombia-municipios.json'
 // components
 import Login from './Login'
 
+const normalizeBarrio = (text = '') => {
+  return text
+    .normalize("NFD")                 // separar letras de tildes
+    .replace(/[\u0300-\u036f]/g, "")  // quitar tildes
+    .replace(/[^a-zA-Z0-9\s]/g, "")   // quitar caracteres especiales
+    .replace(/\s+/g, " ")             // quitar espacios dobles
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, l => l.toUpperCase()) // Primera letra mayúscula por palabra
+}
+
+
 const NuevoReporte = () => {
   const navigate = useNavigate()
   const { user, userData } = useContext(AuthContext)
@@ -127,13 +139,16 @@ const NuevoReporte = () => {
         imageUrls.push(url)
       }
 
+      const barrioNormalizado = normalizeBarrio(barrio)
+
       const payload = {
         // Título: utilizar el nombre cuando se trate de perdida, y en caso contrario, un título descriptivo para encontrada.
         title: estado === 'perdida' ? name : `Mascota encontrada en ${city}${barrio ? ' - ' + barrio : ''}`,
         description,
         department,
         city,
-        barrio,
+        barrio: barrioNormalizado,
+        barrioSlug: barrioNormalizado.toLowerCase().replace(/\s/g, ""),
         estado,
         photoURLs: imageUrls,
         contact,
@@ -210,7 +225,10 @@ const NuevoReporte = () => {
 
           <div>
             <label className='block text-sm font-semibold mb-1'>Barrio</label>
-            <input value={barrio} onChange={(e)=>setBarrio(e.target.value)} className='w-full border px-3 py-2 rounded' />
+            <input value={barrio} 
+              onChange={(e) => setBarrio(normalizeBarrio(e.target.value))}
+              className='w-full border px-3 py-2 rounded'
+            />
           </div>
 
           <div>

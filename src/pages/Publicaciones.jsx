@@ -202,7 +202,13 @@ const estadoBadge = (estado = "") => {
                 {estados.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
 
-            <button onClick={()=>{setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}} className='px-3 py-2 rounded border'>
+            <button onClick={()=>{
+                  setDepartmentFilter(''), 
+                  setCityFilter(''); 
+                  setBarrioFilter(''); 
+                  setEstadoFilter('')
+                }} 
+              className='px-3 py-2 rounded border cursor-pointer hover:bg-amber-950 hover:text-amber-50 transition-all duration-300'>
                 Limpiar
             </button>
             </div>
