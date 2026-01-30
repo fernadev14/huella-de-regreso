@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { collection, onSnapshot, query, orderBy, where, limit, startAfter, getDocs } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import "../styles/responsive.css";
+import "../styles/publicaciones.css";
 import locationsData from '../data/colombia-municipios.json'
 
 // SVG
@@ -321,7 +322,9 @@ const estadoBadge = (estado = "") => {
             </div>
         </div>
 
-        {loading && <div>Cargando publicaciones...</div>}
+        {/* <div className='w-full text-center mt-20'><span class="loader"></span></div> */}
+
+        {loading && <div className='w-full text-center mt-20'><span class="loader"></span></div>}
         {error && <div className='text-red-600'>{error}</div>}
 
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>

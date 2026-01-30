@@ -194,7 +194,7 @@ const NuevoReporte = () => {
           )}
 
           <div>
-            <label className='block text-sm font-semibold mb-1 mt-4'>Departamento</label>
+            <label className='block text-sm font-semibold mb-1'>Departamento</label>
             <select
               className="w-full border px-3 py-2 rounded"
               value={department}

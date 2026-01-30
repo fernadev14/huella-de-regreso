@@ -300,6 +300,14 @@ const EditarReporte = () => {
                 ))}
               </select>
             </div>
+
+            <div>
+            <label className='block text-sm font-semibold mb-1'>Barrio</label>
+            <input value={barrio} 
+              onChange={(e) => setBarrio(normalizeBarrio(e.target.value))}
+              className='w-full border px-3 py-2 rounded'
+            />
+          </div>
           </div>
 
           {/* DESCRIPCIÓN */}
