@@ -397,7 +397,7 @@ const estadoBadge = (estado = "") => {
                       {selected.estado}
                     </span>
                   </p>
-                  <p className='mb-4 flex items-center'>
+                  <p className='mb-4 flex'>
                     <LocationSVG />
                     <strong className='description-title mr-1'>
                       Ubicación:
