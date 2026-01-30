@@ -8,6 +8,7 @@ import locationsData from '../data/colombia-municipios.json'
 import LocationSVG from '../components/SVG/Location';
 import CardIcon from '../components/SVG/CardIcon';
 import PhoneIcon from '../components/SVG/PhoneIcon';
+import PlayIcon from '../components/SVG/PlayIcon';
 
 
 const Publicaciones = () => {
@@ -374,20 +375,20 @@ const estadoBadge = (estado = "") => {
 
                     {selected.photoURLs && selected.photoURLs.length > 1 && (
                       <>
-                        <button onClick={()=>setSelectedIndex((i)=> Math.max(0, i-1))} className='absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow'>◀</button>
-                        <button onClick={()=>setSelectedIndex((i)=> Math.min(selected.photoURLs.length-1, i+1))} className='absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow'>▶</button>
+                        <button onClick={()=>setSelectedIndex((i)=> Math.max(0, i-1))} className='absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow cursor-pointer hover:scale-110 duration-300'> <PlayIcon /> </button>
+                        <button onClick={()=>setSelectedIndex((i)=> Math.min(selected.photoURLs.length-1, i+1))} className='absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow cursor-pointer hover:scale-110 duration-300'><PlayIcon className="rotate-180"/></button>
                       </>
                     )}
                   </div>
 
                   {/* thumbnails */}
-                  <div className='thumbnails flex gap-2 mt-3 overflow-x-auto'>
+                  {/* <div className='thumbnails flex gap-2 mt-3 overflow-x-auto'>
                     {(selected.photoURLs || []).map((u, i) => (
                       <button key={i} onClick={()=>setSelectedIndex(i)} className={`btn-image-thumbnails h-20 w-28 rounded overflow-hidden border ${i===selectedIndex? 'border-yellow-400':'border-transparent'}`}>
                         <img src={u} className='h-full w-full object-cover' alt={`thumb-${i}`} />
                       </button>
                     ))}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className='div-description md:w-1/3 mt-4 md:mt-0 bg-[#ffffff] p-5 rounded-lg shadow-lg'>
@@ -411,7 +412,7 @@ const estadoBadge = (estado = "") => {
                   <p className='mb-4 -mt-5 ml-8 text-md'>
                     <br/>{selected.description}
                     </p>
-                  <p className='mb-4 flex'>
+                  <p className='mb-4 flex flex-wrap'>
                     <PhoneIcon />
                     <strong className='description-title mr-2'>Contacto:</strong> {selected.contact}
                   </p>

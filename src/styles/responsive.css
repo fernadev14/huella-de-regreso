@@ -70,6 +70,7 @@
     /* MODAL */
     .container-modal {
         width: 700px;
+        z-index: 60;
     }
     .container-modal div h2{
         font-size: 1em;
@@ -103,9 +104,9 @@
         overflow-y: scroll;
     }
     .first-image-large, .first-image-large img {
-        height: 200px;
-        /* width: 200px; */
-        object-fit: contain;
+        height: 300px;
+        width: 400px;
+        object-fit: cover;
     }
     .btn-image-thumbnails {
         width: 70px;
@@ -128,7 +129,7 @@
         z-index: 5;
     } */
     .div-photo-first button:nth-child(2), .div-photo-first button:nth-child(3) {
-        display: none;
+        display: none !important;
     }
 
   .container-menu-profile-primary{
@@ -165,7 +166,7 @@
     opacity: 1; pointer-events: auto;
   }
 
-  .menu-burger { z-index: 60; }
+  .menu-burger { z-index: 50; }
   .container-menu-primary { display:flex; flex-direction:column-reverse; align-items:flex-start; }
   .menu-primary { display:flex; flex-direction:column; }
   .menu-prifile { display:flex; flex-direction:column !important; }
