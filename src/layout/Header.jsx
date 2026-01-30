@@ -60,7 +60,7 @@ const Header = () => {
 
               {user ? (
                 <div className='relative'>
-                  <button onClick={() => setShowMenu(!showMenu)} className='flex items-center gap-2 border-2 border-[#1E1E1E] py-2 px-3 rounded-md hover:bg-gray-100'>
+                  <button onClick={() => setShowMenu(!showMenu)} className='flex items-center gap-2 border-2 border-[#1E1E1E] py-2 px-3 rounded-md hover:bg-green-200 duration-300 cursor-pointer'>
                     <Avatar photoURL={userData?.photoURL} firstName={userData?.firstName} size='sm' />
                     <span className='text-sm'>{userData?.firstName || userData?.email?.split('@')[0] || 'Perfil'}</span>
                   </button>
@@ -69,7 +69,7 @@ const Header = () => {
                     <div className='absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50 flex flex-col'>
                       <Link to="/mis-reportes" onClick={() => setShowMenu(false)} className='block px-4 py-2 text-gray-700 hover:bg-gray-100 border-b'>📋 Mis Reportes</Link>
                       <Link to="/profile" onClick={() => setShowMenu(false)} className='block px-4 py-2 text-gray-700 hover:bg-gray-100 border-b'>👤 Editar Perfil</Link>
-                      <button onClick={handleLogout} className='w-full text-left px-4 py-2 text-red-600 hover:bg-red-50'>🚪 Cerrar Sesión</button>
+                      <button onClick={handleLogout} className='w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 cursor-pointer'>🚪 Cerrar Sesión</button>
                     </div>
                   )}
                 </div>

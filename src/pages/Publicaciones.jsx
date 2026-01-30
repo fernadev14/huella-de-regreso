@@ -354,7 +354,7 @@ const estadoBadge = (estado = "") => {
           <div className='fixed inset-0 bg-[#000000c4] flex items-center justify-center z-50 p-4'>
             <div className='container-modal bg-[#f9f9f9] w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto'>
               <div className='flex justify-between items-start mb-4'>
-                <h2 className='text-2xl font-bold'>{selected.title}</h2>
+                <h2 className='text-2xl font-bold w-[70%]'>{selected.title}</h2>
                 <button 
                     onClick={()=>{ setSelected(null); setSelectedIndex(0) }} 
                     className='text-amber-50 bg-red-800 px-4 py-2 rounded-md cursor-pointer'>
