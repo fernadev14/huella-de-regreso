@@ -134,10 +134,10 @@ const EditarReporte = () => {
     setPhotoToRemove(prev => [...prev, url])
   }
 
-  const undoRemovePhoto = (url) => {
-    setExistingPhotos(prev => [...prev, url])
-    setPhotoToRemove(prev => prev.filter(p => p !== url))
-  }
+  // const undoRemovePhoto = (url) => {
+  //   setExistingPhotos(prev => [...prev, url])
+  //   setPhotoToRemove(prev => prev.filter(p => p !== url))
+  // }
 
   const onDragStart = (e, idx) => {
     dragIndexRef.current = idx

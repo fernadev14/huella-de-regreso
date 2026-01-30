@@ -448,6 +448,7 @@ const estadoBadge = (estado = "") => {
                     </div>
                   </div>
 
+                  {/* BUTTONS PUNTOS CAROUSEL */}
                   <div className="flex justify-center gap-2 mt-4">
                     {(selected.photoURLs || []).map((_, i) => (
                       <button

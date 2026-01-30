@@ -3,17 +3,25 @@ import { collection, query, where, onSnapshot, deleteDoc, doc } from 'firebase/f
 import { db } from '../config/firebase'
 import { AuthContext } from '../context/AuthContext'
 import { Link } from 'react-router-dom'
+import LocationSVG from '../components/SVG/Location';
+import CardIcon from '../components/SVG/CardIcon';
+import PhoneIcon from '../components/SVG/PhoneIcon';
+import PlayIcon from '../components/SVG/PlayIcon';
 
 const MisReportes = () => {
   const { user } = useContext(AuthContext)
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selected, setSelected] = useState(null)
-  const [selectedIndex, setSelectedIndex] = useState(0)
   const unsubscribeRef = useRef(null)
   const [activeId, setActiveId] = useState(null);
   const isTouchRef = useRef(false);
+  
+  // Carousel
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selected, setSelected] = useState(null)
+  const carouselRef = useRef(null)
+  const isHovering = useRef(false)
 
   useEffect(() => {
     // true en móviles/tablets táctiles
@@ -57,6 +65,28 @@ const MisReportes = () => {
       setLoading(false)
     }
   }, [user])
+
+  // AUTOMOVIMIENTO CAROUSEL
+  useEffect(() => {
+    if (!selected?.photoURLs?.length) return
+
+    const interval = setInterval(() => {
+      if (isHovering.current) return
+
+      setSelectedIndex(prev =>
+        prev === selected.photoURLs.length - 1 ? 0 : prev + 1
+      )
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [selected])
+
+  // MOVIMIENTO CAROUSEL MINIATURA
+  useEffect(() => {
+    if (!carouselRef.current) return
+    const width = 112 + 8
+    carouselRef.current.style.transform = `translateX(-${selectedIndex * width}px)`
+  }, [selectedIndex])
 
   const handleDelete = async (reportId) => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
@@ -183,11 +213,11 @@ const MisReportes = () => {
 
         {/* Modal */}
         {selected && (
-          <div className='fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4'>
+          <div className='fixed inset-0 bg-[#00000082] flex items-center justify-center z-50 p-4'>
             <div className='bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto max-h-[90vh]'>
               <div className='flex justify-between items-start mb-4'>
                 <h2 className='text-2xl font-bold'>{selected.title}</h2>
-                <button onClick={() => { setSelected(null); setSelectedIndex(0) }} className='text-gray-600'>
+                <button onClick={() => { setSelected(null); setSelectedIndex(0) }} className='text-amber-50 bg-red-800 px-4 py-2 rounded-md cursor-pointer'>
                   Cerrar ✕
                 </button>
               </div>
@@ -205,44 +235,44 @@ const MisReportes = () => {
 
                     {selected.photoURLs && selected.photoURLs.length > 1 && (
                       <>
-                        <button onClick={() => setSelectedIndex((i) => Math.max(0, i - 1))} className='absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow'>
-                          ◀
-                        </button>
-                        <button onClick={() => setSelectedIndex((i) => Math.min(selected.photoURLs.length - 1, i + 1))} className='absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow'>
-                          ▶
-                        </button>
+                      <button onClick={()=>setSelectedIndex((i)=> Math.max(0, i-1))} className='absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow cursor-pointer hover:scale-110 duration-300'> <PlayIcon /> </button>
+                        <button onClick={()=>setSelectedIndex((i)=> Math.min(selected.photoURLs.length-1, i+1))} className='absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow cursor-pointer hover:scale-110 duration-300'><PlayIcon className="rotate-180"/></button>
+                        
                       </>
                     )}
                   </div>
 
                   {/* miniaturas */}
-                  <div className='flex gap-2 mt-3 overflow-x-auto'>
+                  {/* <div className='flex gap-2 mt-3 overflow-x-auto'>
                     {(selected.photoURLs || []).map((u, i) => (
                       <button key={i} onClick={() => setSelectedIndex(i)} className={`h-20 w-28 rounded overflow-hidden border ${i === selectedIndex ? 'border-yellow-400' : 'border-transparent'}`}>
                         <img src={u} className='h-full w-full object-cover' alt={`thumb-${i}`} />
                       </button>
                     ))}
-                  </div>
+                  </div> */}
                 </div>
 
-                <div className='md:w-1/3 mt-4 md:mt-0'>
+                <div className='div-description md:w-1/3 mt-4 md:mt-0 bg-[#ffffff] p-5 rounded-lg shadow-lg'>
                   <p className='mb-2'>
-                    <strong>Ubicación:</strong> {selected.city}
-                    {selected.barrio ? `, ${selected.barrio}` : ''}
-                  </p>
-                  <p className='mb-2'>
-                    <strong>Estado:</strong>{' '}
+                    {/* <strong>Estado:</strong>{' '} */}
                     <span className={`inline-block px-2 py-1 rounded font-semibold ${estadoBadge(selected.estado)}`}>
                       {selected.estado}
                     </span>
                   </p>
-                  <p className='mb-2'>
+                  <p className='mb-2 flex'>
+                    <LocationSVG />
+                    <strong className='mr-2'>Ubicación:</strong> {selected.city}
+                    {selected.barrio ? `, ${selected.barrio}` : ''}
+                  </p>
+                  <p className='mb-2 flex'>
+                    <CardIcon />
                     <strong>Descripción:</strong>
                     <br />
                     {selected.description}
                   </p>
-                  <p className='mb-2'>
-                    <strong>Contacto:</strong> {selected.contact}
+                  <p className='mb-2 flex'>
+                    <PhoneIcon />
+                    <strong className='mr-2'>Contacto:</strong> {selected.contact}
                   </p>
 
                   {/* Campos de encontrada */}
@@ -266,6 +296,52 @@ const MisReportes = () => {
                     </>
                   )}
 
+                  <hr className='mt-10 text-gray-300'/>
+
+                  {/* CAROUSEL */}
+                  <div
+                    className="thumbnails overflow-hidden mt-3"
+                    onMouseEnter={() => (isHovering.current = true)}
+                    onMouseLeave={() => (isHovering.current = false)}
+                  >
+                    <div
+                      ref={carouselRef}
+                      className="flex gap-2 transition-transform duration-500 ease-in-out"
+                    >
+                      {(selected.photoURLs || []).map((u, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setSelectedIndex(i)
+                          }}
+                          className={`h-20 w-28 shrink-0 rounded overflow-hidden border ${
+                            i === selectedIndex ? "border-yellow-400" : "border-transparent"
+                          }`}
+                        >
+                          <img src={u} className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* BUTTONS PUNTOS CAROUSEL */}
+                  <div className="flex justify-center gap-2 mt-4">
+                    {(selected.photoURLs || []).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setSelectedIndex(i)
+                        }}
+                        className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                          i === selectedIndex
+                            ? "bg-yellow-400 w-6"
+                            : "bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        aria-label={`Ir a imagen ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+
                   <div className='flex gap-2 mt-4'>
                     <Link
                       to={`/editar-reporte/${selected.id}`}
@@ -278,7 +354,7 @@ const MisReportes = () => {
                       onClick={() => {
                         handleDelete(selected.id)
                       }}
-                      className='flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded'
+                      className='flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded cursor-pointer'
                     >
                       Eliminar
                     </button>
