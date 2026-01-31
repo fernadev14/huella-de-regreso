@@ -354,8 +354,8 @@ const estadoBadge = (estado = "") => {
 
         {/* Modal */}
         {selected && (
-          <div className='fixed inset-0 bg-[#000000c4] flex items-center justify-center z-50 p-4'>
-            <div className='container-modal bg-[#f9f9f9] w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto'>
+          <div className='fixed inset-0 bg-[#00000082] flex items-center justify-center z-50 p-4'>
+            <div className='bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto max-h-[90vh]'>
               <div className='flex justify-between items-start mb-4'>
                 <h2 className='text-2xl font-bold w-[70%]'>{selected.title}</h2>
                 <button 
@@ -365,10 +365,10 @@ const estadoBadge = (estado = "") => {
                 </button>
               </div>
 
-              <div className='container-modal-all md:flex md:gap-6'>
-                <div className='image-container md:w-2/3'>
-                  <div className='div-photo-first relative'>
-                    <div className='first-image-large h-96 bg-gray-100 rounded overflow-hidden flex items-center justify-center'>
+              <div className='md:flex md:gap-6'>
+                <div className='md:w-2/3'>
+                  <div className='relative'>
+                    <div className='h-96 bg-gray-100 rounded overflow-hidden flex items-center justify-center'>
                       {selected.photoURLs && selected.photoURLs.length ? (
                         <img src={selected.photoURLs[selectedIndex]} alt='' className='w-full h-full object-cover' />
                       ) : (

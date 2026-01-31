@@ -254,7 +254,6 @@ const MisReportes = () => {
 
                 <div className='div-description md:w-1/3 mt-4 md:mt-0 bg-[#ffffff] p-5 rounded-lg shadow-lg'>
                   <p className='mb-2'>
-                    {/* <strong>Estado:</strong>{' '} */}
                     <span className={`inline-block px-2 py-1 rounded font-semibold ${estadoBadge(selected.estado)}`}>
                       {selected.estado}
                     </span>
