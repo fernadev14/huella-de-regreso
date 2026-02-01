@@ -7,7 +7,7 @@ import Avatar from "../components/Avatar"
 import "../styles/header.css"
 import "../styles/responsive.css"
 import huellaRegresoSide from "../assets/huella-lado.png"
-import plusSVG from "../../public/plus.svg"
+import plusSVG from "../assets/plus.svg"
 
 const Header = () => {
   const navigate = useNavigate()
