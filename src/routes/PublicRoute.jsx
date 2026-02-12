@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext'
 const PublicRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext)
 
-  if (loading) return null // o un spinner
+  if (loading) return null // spinner
 
   // Si ya está logueado → fuera del login
   if (user) {
