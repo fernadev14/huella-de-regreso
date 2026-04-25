@@ -39,7 +39,7 @@ const Faq = () => {
                     {FAQS.map((item, idx) => (
                         <li key={idx} className="py-2">
 
-                            <details className="group">
+                            <details className="group bg-white rounded-xl shadow-sm hover:shadow-md transition">
                                 <summary
                                 className="flex cursor-pointer list-none items-center justify-between rounded-lg
                                             px-2 py-4 outline-none transition hover:bg-black/5

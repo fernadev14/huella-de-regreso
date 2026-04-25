@@ -10,30 +10,30 @@ const FourSteps = () => {
                 <img 
                     src={imgDogAnimate} 
                     alt="perrito animado-4-pasos" 
-                    className="h-[400px] -mr-80"
+                    className="h-100 -mr-80"
                 />
             </div>
 
             <ul className="flex flex-col gap-4">
-                <li className="step-item">
+                <li className="step-item hover:scale-105 transition duration-300 shadow-lg hover:shadow-xl">
                     <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
                         <span>1</span>
                     </div>
                     <h3 className="font-bold text-[#1b1b1b] text-2xl">Crear un reporte</h3>
                 </li>
-                <li className="step-item">
+                <li className="step-item hover:scale-105 transition duration-300 shadow-lg hover:shadow-xl">
                     <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
                         <span>2</span>
                     </div>
                     <h3 className="font-bold text-[#1b1b1b] text-2xl">Comparte y difunde</h3>
                 </li>
-                <li className="step-item">
+                <li className="step-item hover:scale-105 transition duration-300 shadow-lg hover:shadow-xl">
                     <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
                         <span>3</span>
                     </div>
                     <h3 className="font-bold text-[#1b1b1b] text-2xl">Resibe alertas y mensajes</h3>
                 </li>
-                <li className="step-item">
+                <li className="step-item hover:scale-105 transition duration-300 shadow-lg hover:shadow-xl">
                     <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
                         <span>4</span>
                     </div>
