@@ -2,30 +2,17 @@
     display: none;
 }
 
-.Container-fourSteps img {
+/* .Container-fourSteps img {
         width: 500px;
         height: 300px;
-    }
+    } */
 
 @media screen and (max-width: 1024px) {
     /* BANNER */
-    .line-one, span {
+    /* .line-one, span {
         font-size: 1.6em !important;
     }
-
-    .line-two {
-        font-size: 2.1em;
-    }
-
-    .parrafo-text {
-        font-size: 0.6em;
-        width: 250px;
-        margin-left: 30px;
-    }
-
-    .btn-report-banner, .btn-report-banner span{
-        font-size: 15px !important;
-    }
+    } */
 
     /* 4 PASOS PARA ENCONTRAR TU MASCOTA */
     .Container-fourSteps {
@@ -44,51 +31,6 @@
     .img-fourSteps img {
         margin-right: 0;
     }
-
-    /* HELP */
-    /* .help-first div {
-        margin-right: 0;
-    }
-    .help-second {
-        display: flex !important;
-        justify-content: center;
-        align-items: center;
-    }
-    .help-first, .help-second {
-        display: block;
-        justify-content: center;
-    }
-    .help-first h3, .help-second h3 {
-        text-align: center;
-        font-size: 15px;
-    }
-    .help-first p, .help-second p {
-        text-align: center;
-        font-size: 10px;
-    } */
-
-    /* MODAL */
-    /* .container-modal {
-        width: 700px;
-        z-index: 60;
-    }
-    .container-modal div h2{
-        font-size: 1em;
-    }
-    .div-photo-first {
-        width: 100%;
-        height:fit-content;
-        overflow: auto;
-    }
-    .estado-modal span{
-        font-size: 0.8em !important;
-    }
-    .description-title {
-        font-size: 13px;
-    } */
-    /* .div-photo-first img {
-        object-fit:inherit;
-    } */
     
 }
 
@@ -103,11 +45,7 @@
         align-items: center;
         overflow-y: scroll;
     }
-    /* .first-image-large, .first-image-large img {
-        height: 300px;
-        width: 400px;
-        object-fit: cover;
-    } */
+
     .btn-image-thumbnails {
         width: 70px;
         height: 70px;
@@ -180,32 +118,8 @@
   .mobile-filters-panel > * { min-height: 0; }
 
   /* BANNER */
-  .line-one, span {
+  /* .line-one, span {
         font-size: 1em !important;
-    }
-
-    .line-two {
-        font-size: 0.7em;
-        margin-bottom: 0.1em;
-    }
-
-    .parrafo-text {
-        font-size: 0.3em;
-        width: 160px;
-        margin-left: 20px;
-        margin-bottom: 5px;
-    }
-
-    .btn-report-banner{
-        margin-top: 0px;
-    }
-    
-    .btn-report-banner a{
-        font-size: 8px !important;
-        padding: 2px 5px;
-    }
-    .container-text-banner {
-        margin-top: -15px;
     }
 
     /* FOURSTEPS */
