@@ -1,57 +1,103 @@
-import imgDogAnimate from "../../assets/perrito-motion-fourSteps.webp";
-import { motion } from "framer-motion"
-import "../../styles/responsive.css"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import imgDogAnimate from "../../assets/perrito-motion-fourSteps.webp"
+import { FaArrowCircleRight } from "react-icons/fa";
+import { FaArrowCircleLeft } from "react-icons/fa";
+
+const steps = [
+  {
+    title: "Crea un reporte",
+    desc: "Sube una foto y describe a tu mascota. Entre más claro, mejor.",
+    emoji: "📝"
+  },
+  {
+    title: "Difunde el reporte",
+    desc: "Comparte el enlace y deja que la comunidad te ayude.",
+    emoji: "📢"
+  },
+  {
+    title: "Recibe alertas",
+    desc: "Personas cercanas pueden avisarte si ven algo similar.",
+    emoji: "🔔"
+  },
+  {
+    title: "Reencuéntrate ❤️",
+    desc: "Coordina y vuelve a casa con tu mascota.",
+    emoji: "🐾"
+  }
+]
 
 const FourSteps = () => {
+    const [index, setIndex] = useState(0)
+
+    const next = () => setIndex((prev) => (prev + 1) % steps.length)
+    const prev = () => setIndex((prev) => (prev - 1 + steps.length) % steps.length)
+
   return (
-    <>
-        <h5 className="title-fourSteps text-4xl text-center mt-20">4 pasos para encontrar a tu mascota</h5>
-        <div className="Container-fourSteps flex mt-20 justify-around">
-            {/* <div className="img-fourSteps">
-                <img 
-                    src={imgDogAnimate} 
-                    alt="perrito animado-4-pasos" 
-                    className="h-100 -mr-80"
-                />
-            </div> */}
+    <section className="py-28 text-center relative overflow-hidden">
 
-            {/* IMAGEN FLOTANTE */}
-            <motion.img
-              src={imgDogAnimate}
-              className="bottom-0 right-10 hidden md:block"
-              animate={{ y: [0, -20, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
-            />
+        <h2 className="text-4xl font-bold mb-12">
+            Así funciona 🐾
+        </h2>
 
-            <ul className="flex flex-col gap-4">
-                <li className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition hover:-translate-y-2">
-                    {/* <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
-                        <span>1</span>
-                    </div> */}
-                    <h3 className="font-bold text-[#1b1b1b] text-2xl">Crear un reporte</h3>
-                </li>
-                <li className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition hover:-translate-y-2">
-                    {/* <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
-                        <span>2</span>
-                    </div> */}
-                    <h3 className="font-bold text-[#1b1b1b] text-2xl">Comparte y difunde</h3>
-                </li>
-                <li className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition hover:-translate-y-2">
-                    {/* <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
-                        <span>3</span>
-                    </div> */}
-                    <h3 className="font-bold text-[#1b1b1b] text-2xl">Resibe alertas y mensajes</h3>
-                </li>
-                <li className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition hover:-translate-y-2">
-                    {/* <div className="bg-[#43A047] rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
-                        <span>4</span>
-                    </div> */}
-                    <h3 className="font-bold text-[#1b1b1b] text-2xl">Reencuentrate ❤️</h3>
-                </li>
-            </ul>
+        {/* CARD */}
+        <div className="relative max-w-3/4 mx-auto">
+
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: 60 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -60 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white/80 backdrop-blur-xl rounded-3xl p-10 shadow-xl"
+                >
+                    <div className="text-5xl mb-4">
+                        {steps[index].emoji}
+                    </div>
+
+                    <h3 className="text-2xl font-bold mb-3">
+                        {steps[index].title}
+                    </h3>
+
+                    <p className="text-gray-600">
+                        {steps[index].desc}
+                    </p>
+                </motion.div>
+            </AnimatePresence>
+
+            {/* CONTROLES */}
+            <div className="flex justify-center gap-4 mt-8">
+                <button onClick={prev} className="px-4 py-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-[#FFD54F]">
+                    <FaArrowCircleLeft />
+                </button>
+                <button onClick={next} className="px-4 py-2 bg-[#FFD54F] rounded-lg cursor-pointer hover:bg-gray-200">
+                    <FaArrowCircleRight />
+                </button>
+            </div>
+
+            {/* INDICADORES */}
+            <div className="flex justify-center gap-2 mt-6">
+                {steps.map((_, i) => (
+                    <div
+                        key={i}
+                        className={`w-2 h-2 rounded-full ${
+                        i === index ? "bg-black" : "bg-gray-300"
+                        }`}
+                    />
+                ))}
+            </div>
         </div>
 
-    </>
+        {/* PERRO FLOTANTE */}
+        <motion.img
+            src={imgDogAnimate}
+            className="absolute bottom-2 right-10 w-62.5 hidden md:block"
+            animate={{ y: [0, -20, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+        />
+
+    </section>
   )
 }
 
