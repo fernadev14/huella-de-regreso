@@ -92,7 +92,7 @@ const FourSteps = () => {
         {/* PERRO FLOTANTE */}
         <motion.img
             src={imgDogAnimate}
-            className="absolute bottom-2 right-10 w-62.5 hidden md:block"
+            className="absolute bottom-0 right-1/20 top-20 w-62.5 hidden md:block"
             animate={{ y: [0, -20, 0] }}
             transition={{ duration: 4, repeat: Infinity }}
         />
