@@ -1,91 +1,105 @@
-import "../../styles/responsive.css"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaPaw } from "react-icons/fa";
+
+const FAQS = [
+  {
+    q: "¿Cómo funciona Huella de Regreso?",
+    a: "Publicas un reporte con foto, ubicación y datos. La comunidad lo ve y te ayuda a encontrar a tu mascota más rápido."
+  },
+  {
+    q: "¿Tengo posibilidades reales de encontrarla?",
+    a: "Sí. Mientras mejor sea la foto y la información, más personas podrán ayudarte."
+  },
+  {
+    q: "¿Sirve para cualquier mascota?",
+    a: "Claro. Perros, gatos y otras mascotas también pueden ser reportadas."
+  },
+  {
+    q: "¿Qué hago si pasa mucho tiempo?",
+    a: "Puedes actualizar tu reporte para que vuelva a mostrarse a más personas."
+  },
+  {
+    q: "¿Las notificaciones son rápidas?",
+    a: "Sí. Se envían en minutos a personas cercanas."
+  },
+  {
+    q: "¿Qué hago cuando la encuentro?",
+    a: "Marca el reporte como encontrado y cierra el proceso 🙌"
+  }
+];
 
 const Faq = () => {
-    const FAQS = [
-      {
-        q: "¿Cómo funciona Huella de Regreso?",
-        a: "Creas un reporte con foto, ubicación y datos de contacto. Lo publicamos y lo difundimos para que la comunidad ayude a encontrar a tu mascota."
-      },
-      {
-        q: "¿Cuáles son las posibilidades de encontrar mi mascota?",
-        a: "Aumentan cuando el reporte tiene buena foto, descripción precisa, y compartes el enlace en redes y grupos locales."
-      },
-      {
-        q: "¿Huella de Regreso funciona para todo tipo de mascotas?",
-        a: "Sí. Perros, gatos y también otras especies. Solo escoge la categoría adecuada al crear el reporte."
-      },
-      {
-        q: "¿Qué pasa si lleva mucho tiempo mi reporte?",
-        a: "Puedes reactivarlo y actualizar la información para que vuelva a circular entre los usuarios cercanos."
-      },
-      {
-        q: "¿Cuánto demora en notificar mi reporte?",
-        a: "La publicación es inmediata. Las notificaciones a la comunidad cercana se envían en minutos."
-      },
-      {
-        q: "¿Qué pasa después de encontrar mi mascota perdida?",
-        a: "Marca el reporte como 'Encontrada' para cerrar la búsqueda y agradecer a quienes ayudaron."
-      }
-    ];
+  const [active, setActive] = useState(null);
+
   return (
-    <>
-        <section className="bg-[#D9D9D9] py-14 mt-20">
-            <div className="container-faq mx-auto w-full max-w-5xl px-6">
-                <h3 className="mb-8 text-center text-3xl font-bold text-[#2b2b2b] sm:text-4xl">
-                Preguntas frecuentes
-                </h3>
+    <section className="py-24 px-6 bg-linear-to-b from-[#f8fafc] to-[#e2e8f0]">
 
-                <ul className="divide-y divide-black/5">
-                    {FAQS.map((item, idx) => (
-                        <li key={idx} className="py-2">
+      <div className="max-w-5xl mx-auto">
 
-                            <details className="group bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                                <summary
-                                className="flex cursor-pointer list-none items-center justify-between rounded-lg
-                                            px-2 py-4 outline-none transition hover:bg-black/5
-                                            focus-visible:ring-2 focus-visible:ring-black/20"
-                                >
-                                <div className="flex items-start gap-3">
-                                    {/* icono verde */}
-                                    <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#43A047] text-white text-[12px] font-bold">
-                                    i
-                                    </span>
+        {/* TITULO */}
+        <h3 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-4">
+          Preguntas frecuentes
+        </h3>
 
-                                    <span className="text-base font-bold leading-6 text-[#2E7D32]">
-                                    {item.q}
-                                    </span>
-                                </div>
-                                <svg
-                                    className="ml-4 h-5 w-5 shrink-0 text-[#2b2b2b] transition-transform duration-200 group-open:rotate-90"
-                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M6.293 2.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L11.586 10 6.293 4.707a1 1 0 010-1.414z" clipRule="evenodd"/>
-                                </svg>
-                                </summary>
+        <p className="text-center text-gray-500 mb-14 max-w-xl mx-auto">
+          Todo lo que necesitas saber para encontrar a tu mascota más rápido 🐾
+        </p>
 
-                                {/* Contenido con animación */}
-                                <div
-                                className="
-                                    grid grid-rows-[0fr] overflow-hidden transition-all duration-300 ease-in-out
-                                    group-open:grid-rows-[1fr]
-                                "
-                                >
-                                    <div className="min-h-0">
-                                        <div className="px-2 pb-5 pl-13 text-sm leading-6 text-[#3f3f3f]
-                                                        opacity-0 translate-y-2 transition-all duration-300
-                                                        group-open:opacity-100 group-open:translate-y-0">
-                                        {item.a}
-                                        </div>
-                                    </div>
-                                </div>
-                            </details>
+        {/* GRID MODERNO */}
+        <div className="grid md:grid-cols-2 gap-6">
 
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </section>
-    </>
-  )
-}
+          {FAQS.map((item, index) => (
+            <motion.div
+              key={index}
+              layout
+              onClick={() => setActive(active === index ? null : index)}
+              className={`
+                cursor-pointer rounded-2xl p-6
+                bg-white/80 backdrop-blur-md
+                border border-gray-200
+                shadow-md hover:shadow-xl
+                transition-all duration-300
+                ${active === index ? "ring-2 ring-[#43A047]" : ""}
+              `}
+            >
 
-export default Faq
+              {/* PREGUNTA */}
+              <div className="flex items-start gap-4">
+
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#43A047] text-white shadow-md">
+                  <FaPaw />
+                </div>
+
+                <h4 className="font-semibold text-gray-800 text-lg">
+                  {item.q}
+                </h4>
+
+              </div>
+
+              {/* RESPUESTA ANIMADA */}
+              <AnimatePresence>
+                {active === index && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-gray-600 mt-4 text-sm leading-relaxed"
+                  >
+                    {item.a}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+            </motion.div>
+          ))}
+
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+export default Faq;

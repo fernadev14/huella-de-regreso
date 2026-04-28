@@ -2,17 +2,7 @@
     display: none;
 }
 
-/* .Container-fourSteps img {
-        width: 500px;
-        height: 300px;
-    } */
-
 @media screen and (max-width: 1024px) {
-    /* BANNER */
-    /* .line-one, span {
-        font-size: 1.6em !important;
-    }
-    } */
 
     /* 4 PASOS PARA ENCONTRAR TU MASCOTA */
     .Container-fourSteps {
@@ -168,12 +158,12 @@
     }
 
     /* FAQ */
-    .container-faq h3 {
+    /* .container-faq h3 {
         font-size: 1.5em;
     }
     .container-faq ul summary div span:nth-child(2) {
         font-size: 0.8em !important;
-    }
+    } */
 
 }
 
