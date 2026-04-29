@@ -1,106 +1,149 @@
 import iconForm from "../../assets/icon_form1.png";
 import iconNotification from "../../assets/icon_notificacion.png";
 import iconEncuentro from "../../assets/icon_reencuentro.png";
-import { Link } from "react-router-dom"
-// import "../../styles/responsive.css";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Help = () => {
   return (
     <>
-      <div className='help-container'>
-        <h3 className='text-center mt-20 text-4xl'>¿Cómo te ayudamos?</h3>
+      <section className="py-24 px-6">
 
-        <div className="flex mt-14 justify-center gap-3 px-5">
-          
-          <div className="grid md:grid-cols-3 gap-8 mt-16 px-6">
-            
-          {/* CARD 1 */}
-            <div className="bg-white/70 backdrop-blur-xl p-6 rounded-2xl shadow-lg hover:shadow-xl transition hover:-translate-y-2">
-              <img src={iconForm} className="w-16 mb-4 mx-auto" />
-              <h3 className="text-xl font-bold text-center">
-                Publica tu reporte
+        {/* TITLE */}
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold">
+            ¿Cómo te ayudamos?
+          </h2>
+          <p className="text-gray-500 mt-3">
+            Tecnología + comunidad para encontrar mascotas más rápido
+          </p>
+        </div>
+
+        {/* CARDS */}
+        <div className="grid md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
+
+          {/* CARD */}
+          {[{
+            img: iconForm,
+            title: "Publica tu reporte",
+            desc: "Fácil, rápido y desde cualquier dispositivo"
+          },{
+            img: iconNotification,
+            title: "Activa alertas",
+            desc: "Notificamos a personas cercanas automáticamente"
+          },{
+            img: iconEncuentro,
+            title: "Conecta y recupera",
+            desc: "Coordina de forma segura el reencuentro"
+          }].map((item, i) => (
+
+            <motion.div
+              key={i}
+              whileHover={{ y: -10 }}
+              className="group relative bg-white/60 backdrop-blur-xl p-8 rounded-3xl shadow-md hover:shadow-2xl transition overflow-hidden"
+            >
+
+              {/* Glow hover */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-linear-to-br from-yellow-200/30 to-green-200/30 blur-2xl"></div>
+
+              {/* ICON */}
+              <motion.img
+                src={item.img}
+                className="w-16 mb-6 mx-auto relative z-10"
+                whileHover={{ scale: 1.1, rotate: 3 }}
+              />
+
+              <h3 className="text-xl font-bold text-center relative z-10">
+                {item.title}
               </h3>
-              <p className="text-center text-gray-600 mt-2">
-                Fácil, rápido y desde cualquier dispositivo
+
+              <p className="text-center text-gray-600 mt-2 relative z-10">
+                {item.desc}
+              </p>
+
+            </motion.div>
+
+          ))}
+        </div>
+      </section>
+
+      {/* 💛 SECCIÓN EMOCIONAL */}
+      <section className="text-center py-24 px-6 bg-linear-to-b from-transparent to-yellow-50">
+
+        <h2 className="text-3xl font-bold">
+          No es solo tecnología… es esperanza 🐾
+        </h2>
+
+        <p className="mt-4 text-gray-600 max-w-xl mx-auto">
+          Cada reporte es una historia, cada notificación una posibilidad,
+          y cada reencuentro… un final feliz.
+        </p>
+
+      </section>
+
+      {/* 📊 STATS MODERNAS */}
+      <section className="py-16">
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
+
+          {[
+            { value: "+500", label: "Mascotas encontradas" },
+            { value: "+1200", label: "Reportes activos" },
+            { value: "+3000", label: "Usuarios ayudando" },
+            { value: "24/7", label: "Sistema activo" }
+          ].map((stat, i) => (
+
+            <div
+              key={i}
+              className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition"
+            >
+              <h3 className="text-3xl font-bold text-[#43A047]">
+                {stat.value}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {stat.label}
               </p>
             </div>
 
-          {/* CARD 2 */}
-            <div className="bg-white/70 backdrop-blur-xl p-6 rounded-2xl shadow-lg hover:shadow-xl transition hover:-translate-y-2">
-              <img src={iconNotification} className="w-16 mb-4 mx-auto" />
-              <h3 className="text-xl font-bold text-center">
-                Activa la alerta en tu zona
-              </h3>
-              <p className="text-center text-gray-600 mt-2">
-                Notificamos a usuarios cercanos y a quienes han visto mascotas similares recientemente.
-              </p>
-            </div>
+          ))}
 
-          {/* CARD 3 */}
-            <div className="bg-white/70 backdrop-blur-xl p-6 rounded-2xl shadow-lg hover:shadow-xl transition hover:-translate-y-2">
-              <img src={iconEncuentro} className="w-16 mb-4 mx-auto" />
-              <h3 className="text-xl font-bold text-center">
-                Conecta con quien la encuentrea
-              </h3>
-              <p className="text-center text-gray-600 mt-2">
-                Recibe mensjaes seguros dentro de la plataforma o alguna red social que no comprometa 
-                datos que no quieras compartir y coordina el reencuentro.
-              </p>
-            </div>
+        </div>
+
+      </section>
+
+      {/* 🚀 CTA PRO */}
+      <section className="py-24 px-6">
+
+        <div className="relative bg-[#FFD54F] rounded-3xl py-20 px-8 max-w-5xl mx-auto shadow-2xl overflow-hidden">
+
+          {/* Glow background */}
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-white/30 blur-3xl rounded-full"></div>
+
+          <div className="relative text-center">
+
+            <h2 className="text-4xl font-bold text-black">
+              Empieza ahora mismo
+            </h2>
+
+            <p className="mt-4 text-black/70">
+              Tu mascota puede aparecer en cualquier momento
+            </p>
+
+            <Link
+              to="/nuevo-reporte"
+              className="mt-8 inline-block bg-black text-white px-8 py-4 rounded-xl 
+                        hover:scale-105 hover:shadow-lg transition"
+            >
+              Crear reporte
+            </Link>
 
           </div>
 
         </div>
-      </div> 
 
-      {/* SENTIDO EMOCIONAL */}
-      <section className="text-center py-20 px-10">
-        <h2 className="text-3xl font-bold">
-          Miles de mascotas vuelven a casa 🐾
-        </h2>
-
-        <p className="mt-4 text-gray-600">
-          Gracias a la comunidad que ayuda todos los días
-        </p>
-      </section>
-
-    {/* ESTADISTICAS */}
-      <div className="flex justify-center gap-10 py-10">
-        <div>
-          <h3 className="text-3xl font-bold text-[#43A047]">+1200</h3>
-          <p>mascotas encontradas</p>
-        </div>
-
-        <div>
-          <h3 className="text-3xl font-bold text-[#43A047]">+500</h3>
-          <p>reportes activos</p>
-        </div>
-      </div>
-
-      <section className="py-20 text-center">
-
-        <div className="bg-[#FFD54F] rounded-3xl py-16 px-6 max-w-4xl mx-auto shadow-xl">
-        
-          <h2 className="text-3xl font-bold text-black">
-            Empieza ahora mismo
-          </h2>
-        
-          <p className="mt-4 text-black/70">
-            Publica un reporte y deja que la comunidad te ayude
-          </p>
-        
-          <Link
-            to="/nuevo-reporte"
-            className="mt-6 inline-block bg-black text-white px-6 py-3 rounded-xl hover:scale-105 transition"
-          >
-            Crear reporte
-          </Link>
-        
-        </div>
-        
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Help
+export default Help;
