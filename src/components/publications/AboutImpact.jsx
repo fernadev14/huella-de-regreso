@@ -6,7 +6,7 @@ const stats = [
 
 const AboutImpact = () => {
   return (
-    <section className="py-20 px-6 bg-white">
+    <section className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition">
 
       <div className="max-w-5xl mx-auto text-center">
 

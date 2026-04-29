@@ -2,8 +2,27 @@ import { motion } from "framer-motion"
 
 const AboutHero = () => {
   return (
-    <section className="flex flex-col items-center justify-center py-28 min-h-screen px-6 bg-linear-to-b from-[#f8fafc] to-white">
+    <section className="flex flex-col items-center justify-center text-center py-28 min-h-screen px-6 bg-linear-to-b from-[#f8fafc] to-white">
 
+      {/* HUELLA FLOTANTE 1 */}
+      <motion.div
+          className="absolute opacity-20 text-6xl"
+          animate={{ x: [10, 60, 10], y: [0, -50, 0] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          >
+          🐾
+      </motion.div>
+
+          {/* HUELLA FLOTANTE 2 */}
+      <motion.div
+          className="absolute opacity-20 text-6xl"
+          animate={{ x: [10, 60, 10], y: [0, -50, 0] }}
+          transition={{ duration: 6, repeat: Infinity }}
+        >
+          🐾
+      </motion.div>
+
+      {/* TITULO */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -27,7 +46,7 @@ const AboutHero = () => {
         transition={{ delay: 0.2 }}
         className="mt-6 text-gray-600 max-w-2xl mx-auto"
       >
-        Es parte de tu familia. Por eso creamos una forma más rápida y humana de ayudar a que regresen a casa 🐾
+        Es parte de tu familia. Por eso creamos una forma más rápida y humana de ayudar a que regresen a casa 
       </motion.p>
 
     </section>
