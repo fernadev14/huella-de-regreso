@@ -19,10 +19,10 @@ const Banner = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-extrabold leading-tight"
           >
-            <span className="text-[#FFD54F]">Encuentra</span>{" "}
-            <span className="text-[#1B1B1B]">a tu</span>
+            <span className="text-[#F7D047]">¿Perdiste a </span>{" "}
+            <span className="text-[#1B1B1B]">tu </span>
             <br />
-            <span className="text-white">mejor amigo</span>
+            <span className="text-[#1B1B1B]">mascota?</span>
           </motion.h1>
 
           <p className="mt-6 text-gray-700 max-w-md font-semibold">

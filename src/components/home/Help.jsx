@@ -12,7 +12,7 @@ const Help = () => {
         {/* TITLE */}
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-4xl font-bold">
-            ¿Cómo te ayudamos?
+            ¿Por qué usar Huella de Regreso?
           </h2>
           <p className="text-gray-500 mt-3">
             Tecnología + comunidad para encontrar mascotas más rápido
