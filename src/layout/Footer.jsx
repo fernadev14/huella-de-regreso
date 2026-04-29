@@ -78,7 +78,7 @@ const Footer = () => {
 
             {/* LINEA FINAL */}
             <div className="border-t border-white/10 mt-12 pt-6 text-center text-sm text-gray-500">
-            © {new Date().getFullYear()-1} Huella de Regreso — Todos los derechos reservados
+            © {new Date().getFullYear()-1} Fernando Pérez — Todos los derechos reservados
             </div>
 
         </div>
