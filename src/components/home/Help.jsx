@@ -54,7 +54,7 @@ const Help = () => {
       </div> 
 
       {/* SENTIDO EMOCIONAL */}
-      <section className="text-center py-20">
+      <section className="text-center py-20 px-10">
         <h2 className="text-3xl font-bold">
           Miles de mascotas vuelven a casa 🐾
         </h2>
