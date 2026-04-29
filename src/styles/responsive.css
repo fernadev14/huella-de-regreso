@@ -2,30 +2,6 @@
     display: none;
 }
 
-@media screen and (max-width: 1024px) {
-
-    /* 4 PASOS PARA ENCONTRAR TU MASCOTA */
-    /* .Container-fourSteps {
-        flex-direction: column;
-        align-items: center;
-    }
-    .Container-fourSteps img {
-        width: auto;
-        height: 200px;
-    }
-    .img-fourSteps {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-    .img-fourSteps img {
-        margin-right: 0;
-    } */
-    
-}
-
-
-
 @media screen and (max-width: 768px) {
     /* MODAL */
     .container-modal-all {
@@ -40,13 +16,11 @@
         width: 70px;
         height: 70px;
     }
- 
     .thumbnails {
         width: 90%;
     }
-   
 
-  .container-menu-profile-primary{
+.container-menu-profile-primary{
     position: fixed;
     top: 0; right: 0;
     height: 100dvh;
@@ -55,43 +29,45 @@
     border-left: 1px solid #e5e7eb;
     box-shadow: -6px 0 16px rgba(0,0,0,.08);
     z-index: 50;
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.85);
 
     /* Estado CERRADO por defecto */
     transform: translateX(100%) !important;
     transition: transform 280ms ease !important;
     will-change: transform;
     overflow-y: auto;
-  }
-  .container-menu-profile-primary.open{
+}
+.container-menu-profile-primary.open{
     /* Estado ABIERTO */
     transform: translateX(0) !important;
-  }
+}
 
   /* Backdrop */
-  .mobile-backdrop{
+.mobile-backdrop{
     position: fixed; inset: 0;
     background: rgba(0,0,0,0);
     opacity: 0; pointer-events: none;
     transition: opacity 250ms ease;
     z-index: 49;
-  }
-  .mobile-backdrop.open{
+}
+.mobile-backdrop.open{
     background: rgba(0,0,0,.5);
     opacity: 1; pointer-events: auto;
-  }
+}
 
-  .menu-burger { z-index: 50; }
-  .container-menu-primary { display:flex; flex-direction:column-reverse; align-items:flex-start; }
-  .menu-primary { display:flex; flex-direction:column; }
-  .menu-prifile { display:flex; flex-direction:column !important; }
-  .btn-menu-profile { margin-left: 48px; margin-top: 10px; }
+.menu-burger { z-index: 50; }
+.container-menu-primary { display:flex; flex-direction:column-reverse; align-items:flex-start; }
+.menu-primary { display:flex; flex-direction:column; }
+.menu-prifile { display:flex; flex-direction:column !important; }
+.btn-menu-profile { margin-left: 48px; margin-top: 10px; }
 
 
   /* FILTERS */
-  .container-filter-desktop { display: none; }
-  .container-filter-mobile  { display: block; }
+.container-filter-desktop { display: none; }
+.container-filter-mobile  { display: block; }
 
-  .mobile-filters-panel{
+.mobile-filters-panel{
     display: grid;
     grid-template-rows: 0fr;         /* cerrado */
     overflow: hidden;
@@ -99,16 +75,16 @@
     opacity: 0;
     transform: translateY(-4px);
     margin-top: .5rem;
-  }
-  .mobile-filters-panel.open{
+}
+.mobile-filters-panel.open{
     grid-template-rows: 1fr;         /* abierto */
     opacity: 1;
     transform: translateY(0);
-  }
+}
   .mobile-filters-panel > * { min-height: 0; }
 
   /* BANNER */
-  /* .line-one, span {
+/* .line-one, span {
         font-size: 1em !important;
     }
 

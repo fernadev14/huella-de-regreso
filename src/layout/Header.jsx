@@ -14,6 +14,22 @@ const Header = () => {
   const { user, userData } = useContext(AuthContext)
   const [showMenu, setShowMenu] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  
+     // Bloquear scroll cuando el menú móvil está abierto
+    useEffect(() => {
+      if (mobileOpen) document.body.style.overflow = "hidden";
+      else document.body.style.overflow = "";
+      return () => { document.body.style.overflow = ""; };
+    }, [mobileOpen]);
+
+    useEffect(() => {
+      const handleScroll = () => {
+        setScrolled(window.scrollY > 10)
+      }
+      window.addEventListener("scroll", handleScroll)
+      return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
 
   const handleLogout = async () => {
     try {
@@ -25,48 +41,75 @@ const Header = () => {
     }
   }
 
-   // Bloquear scroll cuando el menú móvil está abierto
-  useEffect(() => {
-    if (mobileOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [mobileOpen]);
-
   return (
     <>
-        <header className='w-full bg-[#F5F5F5] header'>
+        <header className={`w-full fixed top-0 z-50 transition-all
+                ${scrolled 
+                  ? "bg-white/80 backdrop-blur-xl shadow-md" 
+                  : "bg-transparent"}
+              `}
+        >
           <div className='container mx-auto flex items-center justify-between py-3 px-4'>
             <div className='flex items-center gap-4'>
               <Link to="/" className='flex items-center'>
-                <img src={huellaRegresoSide} alt='logo-huella-de-regreso' className='h-12 md:h-14' />
+                <img 
+                  src={huellaRegresoSide} 
+                  alt='logo-huella-de-regreso' 
+                  className='h-12 md:h-14 hover:scale-105 transition' 
+                />
               </Link>
             </div>
 
             {/* Desktop nav */}
             <nav className='hidden lg:flex items-center gap-8'>
               <ul className='flex gap-8 text-lg items-center'>
-                <Link to="/"><li className='cursor-pointer'>Inicio</li></Link>
-                <Link to="/quienes-somos"><li className='cursor-pointer'>Quiénes somos</li></Link>
-                <Link to="/publicaciones"><li className='cursor-pointer'>Publicaciones</li></Link>
+                <Link to="/">
+                  <li className='cursor-pointer relative group'>
+                    Inicio
+                    <span className='absolute left-0 -bottom-1 w-0 h-0.5 bg-[#FFD54F] transition-all group-hover:w-full'></span>
+                  </li>
+                </Link>
+                <Link to="/quienes-somos">
+                  <li className='cursor-pointer relative group'>
+                    Quiénes somos
+                    <span className='absolute left-0 -bottom-1 w-0 h-0.5 bg-[#FFD54F] transition-all group-hover:w-full'></span>
+                  </li>
+                </Link>
+                <Link to="/publicaciones">
+                  <li className='cursor-pointer relative group'>
+                    Publicaciones
+                    <span className='absolute left-0 -bottom-1 w-0 h-0.5 bg-[#FFD54F] transition-all group-hover:w-full'></span>
+                  </li>
+                </Link>
               </ul>
             </nav>
 
             {/* Actions - desktop */}
             <div className='hidden lg:flex items-center gap-4'>
-              <Link to="/nuevo-reporte" className='bg-[#FFD54F] text-[#333333] py-2 px-4 rounded-md flex items-center gap-2'>
-                <img src={plusSVG} alt="icon-plusSVG" className='w-5' />
-                <span className='font-semibold'>Nuevo reporte</span>
+              <Link 
+                to="/nuevo-reporte" 
+                className='flex items-center gap-2 px-5 py-2.5 rounded-xl
+                          bg-[#FFD54F] text-[#333] font-semibold
+                          shadow-md hover:shadow-xl
+                          hover:scale-105 transition-all duration-300'
+              >
+                <img src={plusSVG} className='w-5' />
+                Nuevo reporte
               </Link>
 
               {user ? (
                 <div className='relative'>
-                  <button onClick={() => setShowMenu(!showMenu)} className='flex items-center gap-2 border-2 border-[#1E1E1E] py-2 px-3 rounded-md hover:bg-green-200 duration-300 cursor-pointer'>
+                  <button onClick={() => setShowMenu(!showMenu)} className='flex items-center gap-2 bg-white/70 backdrop-blur-md border border-gray-200 py-2 px-3 rounded-xl hover:shadow-md transition cursor-pointer'>
                     <Avatar photoURL={userData?.photoURL} firstName={userData?.firstName} size='sm' />
                     <span className='text-sm'>{userData?.firstName || userData?.email?.split('@')[0] || 'Perfil'}</span>
                   </button>
 
                   {showMenu && (
-                    <div className='absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50 flex flex-col'>
+                    <div className='absolute right-0 mt-3 w-56 
+  bg-white/80 backdrop-blur-xl 
+  border border-gray-200 
+  rounded-2xl shadow-xl 
+  overflow-hidden'>
                       <Link to="/mis-reportes" onClick={() => setShowMenu(false)} className='block px-4 py-2 text-gray-700 hover:bg-gray-100 border-b'>📋 Mis Reportes</Link>
                       <Link to="/profile" onClick={() => setShowMenu(false)} className='block px-4 py-2 text-gray-700 hover:bg-gray-100 border-b'>👤 Editar Perfil</Link>
                       <button onClick={handleLogout} className='w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 cursor-pointer'>🚪 Cerrar Sesión</button>
@@ -82,7 +125,10 @@ const Header = () => {
 
             {/* Mobile actions: hamburger */}
             <div className='menu-burger lg:hidden flex items-center gap-3'>
-              <button onClick={() => setMobileOpen(!mobileOpen)} aria-label='Abrir menú' className='p-2 rounded-md border'>
+              <button onClick={() => setMobileOpen(!mobileOpen)} 
+                aria-label='Abrir menú' 
+                className='p-2 rounded-xl border border-gray-200 bg-white/70 backdrop-blur hover:shadow transition cursor-pointer'
+              >
                 {mobileOpen ? (
                   <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
@@ -108,8 +154,8 @@ const Header = () => {
           <div className={`container-menu-profile-primary lg:hidden ${mobileOpen ? 'open' : ''}`}>
             {/* ...contenido del menú... */}
             {mobileOpen && (
-                <div className='lg:hidden bg-white border-t border-gray-200 shadow-sm'>
-                <div className='px-4 pt-4 pb-6 space-y-3'>
+                <div className='lg:hidden'>
+                <div className='px-4 pt-4 pb-6 space-y-3 bg-white/30 backdrop-blur-xl border-b border-white/30'>
                     <div className="container-menu-primary justify-around items-center flex">
                         <div className='menu-primary justify-around gap-2'>
                         <Link to='/' onClick={() => setMobileOpen(false)} className='py-2 px-3 rounded hover:bg-gray-50'>Inicio</Link>
