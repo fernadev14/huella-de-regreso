@@ -30,7 +30,7 @@ const FAQS = [
 ];
 
 const Faq = () => {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState(0);
 
   return (
     <section className="py-24 px-6 bg-linear-to-b from-[#f8fafc] to-[#e2e8f0]">
@@ -46,6 +46,31 @@ const Faq = () => {
           Todo lo que necesitas saber para encontrar a tu mascota más rápido 🐾
         </p>
 
+        {/* RESPUESTAS RÁPIDAS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 text-center">
+
+          <div className="bg-white rounded-xl p-4 shadow-md">
+            <p className="text-xs text-gray-500">Publicación</p>
+            <p className="font-bold text-[#43A047]">Inmediata</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-md">
+            <p className="text-xs text-gray-500">Notificaciones</p>
+            <p className="font-bold text-[#43A047]">En minutos</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-md">
+            <p className="text-xs text-gray-500">Costo</p>
+            <p className="font-bold text-[#43A047]">Gratis</p>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-md">
+            <p className="text-xs text-gray-500">Cobertura</p>
+            <p className="font-bold text-[#43A047]">Comunidad</p>
+          </div>
+
+        </div>
+
         {/* GRID MODERNO */}
         <div className="grid md:grid-cols-2 gap-6">
 
@@ -53,12 +78,13 @@ const Faq = () => {
             <motion.div
               key={index}
               layout
+              whileHover={{ scale: 1.02 }}
               onClick={() => setActive(active === index ? null : index)}
               className={`
                 cursor-pointer rounded-2xl p-6
                 bg-white/80 backdrop-blur-md
                 border border-gray-200
-                shadow-md hover:shadow-xl
+                shadow-md hover:shadow-xl hover:-translate-y-1
                 transition-all duration-300
                 ${active === index ? "ring-2 ring-[#43A047]" : ""}
               `}
@@ -94,6 +120,23 @@ const Faq = () => {
 
             </motion.div>
           ))}
+
+        </div>
+
+        {/* CTA FINAL */}
+        <div className="text-center mt-20">
+
+          <p className="text-gray-600 mb-4">
+            ¿Aún tienes dudas?
+          </p>
+
+          <a
+            href="/nuevo-reporte"
+            className="inline-block bg-[#43A047] text-white px-6 py-3 rounded-xl
+                      hover:scale-105 transition shadow-lg"
+          >
+            Crear reporte ahora
+          </a>
 
         </div>
 
