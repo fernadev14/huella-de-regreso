@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useScrollAnimation } from './useScrollAnimation';
+import { Link } from "react-router-dom";
 import '../../styles/quienes-somos.css'
 
 export default function AboutCTA() {
@@ -50,13 +51,17 @@ export default function AboutCTA() {
         <div className={`flex flex-wrap justify-center gap-3 mb-12 transition-all duration-700 delay-300 ${
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}>
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition hover:-translate-y-1">
+          <Link 
+            to='/nuevo-reporte'
+            className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition hover:-translate-y-1">
             + Hacer un reporte
-          </button>
+          </Link>
 
-          <button className="bg-white border border-gray-200 hover:border-yellow-400 text-gray-700 hover:text-yellow-700 font-semibold px-8 py-3 rounded-lg shadow-sm hover:shadow-md transition hover:-translate-y-1">
+          <Link 
+            to='/publicaciones'
+            className="bg-white border border-gray-200 hover:border-yellow-400 text-gray-700 hover:text-yellow-700 font-semibold px-8 py-3 rounded-lg shadow-sm hover:shadow-md transition hover:-translate-y-1">
             Ver mascotas perdidas
-          </button>
+          </Link>
         </div>
 
         {/* DIVIDER */}
