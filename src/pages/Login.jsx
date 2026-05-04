@@ -1,10 +1,11 @@
+import { lazy, Suspense } from 'react'
+const SlideInfo = lazy(() => import('../components/newReport/SlideInfo.jsx'))
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
-import { auth, googleProvider, db } from '../config/firebase'
+// import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+// import { doc, setDoc } from 'firebase/firestore'
+// import { auth, googleProvider, db } from '../config/firebase'
 import SVGGoogleIcon from "../components/SVG/GoogleIcon.jsx"
-import SlideInfo from '../components/newReport/SlideInfo.jsx'
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,40 +27,53 @@ const Login = () => {
       if (!email) return setError('Ingrese su correo')
       if (!password) return setError('Ingrese su contraseña')
 
-      // Intenta iniciar sesión con Firebase
+      // Import dinámico auth firebase para optimizar bundle
+      const [{ signInWithEmailAndPassword }, { auth }] = await Promise.all([
+        import('firebase/auth'),
+        import('../config/firebase')
+      ])
+
       await signInWithEmailAndPassword(auth, email, password)
-      // Si es exitoso, navega al home
+
       navigate(from, { replace: true })
+
     } catch (err) {
-      // Si el usuario no existe, redirige a signup
       if (err.code === 'auth/user-not-found') {
         navigate('/signup', { state: { email } })
         return
       }
-      // Si la contraseña es incorrecta
       if (err.code === 'auth/wrong-password') {
         setError('Contraseña incorrecta')
         return
       }
-      // Otros errores
       setError(err.message || 'Error al iniciar sesión')
     } finally {
       setLoading(false)
     }
   }
 
+  // Manejo de inicio con Google y optimización con import dinámico
   const handleGoogleSignIn = async () => {
     setError(null)
     setLoading(true)
 
     try {
+      const [
+        { signInWithPopup },
+        { doc, setDoc },
+        { auth, googleProvider, db }
+      ] = await Promise.all([
+        import('firebase/auth'),
+        import('firebase/firestore'),
+        import('../config/firebase')
+      ])
+
       const result = await signInWithPopup(auth, googleProvider)
       const user = result.user
 
-      // Guardar/actualizar datos en Firestore
       const userRef = doc(db, 'users', user.uid)
       const nameParts = user.displayName?.split(' ') || ['User']
-      
+
       await setDoc(
         userRef,
         {
@@ -72,8 +86,8 @@ const Login = () => {
         { merge: true }
       )
 
-      // Si es exitoso, navega al home
       navigate(from, { replace: true })
+
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión con Google')
     } finally {
@@ -85,7 +99,9 @@ const Login = () => {
     <div className='flex flex-col-reverse md:flex-row-reverse min-h-screen'>
       {/* LADO IZQUIERDO */}
       <div className="md:w-1/2 bg-[#FFD54F] flex items-center justify-center py-5">
-        <SlideInfo />
+        <Suspense fallback={null}>
+          <SlideInfo />
+        </Suspense>
       </div>
 
       <div className='md:w-1/2 flex items-center justify-center bg-gray-100'>
