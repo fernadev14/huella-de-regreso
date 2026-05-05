@@ -1,11 +1,12 @@
-import { useEffect, useState, useContext, useRef } from 'react'
+import { useEffect, useState, useContext, useRef, lazy, Suspense } from 'react'
 import { collection, query, where, onSnapshot, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { AuthContext } from '../context/AuthContext'
 import { Link } from 'react-router-dom'
 
-import ReportCard  from '../components/myReports/ReportCard'
-import ReportModal from '../components/myReports/ReportModal'
+// Lazy components
+const ReportCard  = lazy(() => import('../components/myReports/ReportCard'))
+const ReportModal = lazy(() => import('../components/myReports/ReportModal'))
 
 // ── Empty state ────────────────────────────────────────────────────────────────
 const EmptyState = () => (
@@ -63,7 +64,9 @@ const MisReportes = () => {
     )
 
     const unsub = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+      const data = snapshot.docs
+                  .map(d => ({ id: d.id, ...d.data() }))
+                  .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
       setReports(data)
       setLoading(false)
     })
@@ -97,12 +100,12 @@ const MisReportes = () => {
               </p>
             )}
           </div>
-          <Link
+          {/* <Link
             to="/nuevo-reporte"
             className="bg-[#FFD54F] hover:bg-yellow-400 text-gray-900 font-bold text-sm px-5 py-2.5 rounded-xl transition-colors hidden sm:flex items-center gap-1.5"
           >
             + Nuevo reporte
-          </Link>
+          </Link> */}
         </div>
 
         {/* Grid */}
@@ -111,30 +114,38 @@ const MisReportes = () => {
             ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
             : reports.length === 0
               ? <EmptyState />
-              : reports.map(r => (
-                  <ReportCard
-                    key={r.id}
-                    r={r}
-                    activeId={activeId}
-                    setActiveId={setActiveId}
-                    isTouchRef={isTouchRef}
-                    onDelete={handleDelete}
-                    onView={handleView}
-                  />
-                ))
+              : (
+                <Suspense fallback={Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}>
+                  {reports.map(r => (
+                    <ReportCard
+                      key={r.id}
+                      r={r}
+                      activeId={activeId}
+                      setActiveId={setActiveId}
+                      isTouchRef={isTouchRef}
+                      onDelete={handleDelete}
+                      onView={handleView}
+                    />
+                  ))}
+                </Suspense>
+              )
           }
         </div>
 
       </div>
 
       {/* Modal */}
-      <ReportModal
-        selected={selected}
-        setSelected={setSelected}
-        handleDelete={handleDelete}
-        selectedIndex={selectedIndex}
-        setSelectedIndex={setSelectedIndex}
-      />
+      {selected && (
+        <Suspense fallback={null}>
+          <ReportModal
+            selected={selected}
+            setSelected={setSelected}
+            handleDelete={handleDelete}
+            selectedIndex={selectedIndex}
+            setSelectedIndex={setSelectedIndex}
+          />
+        </Suspense>
+      )}
     </div>
   )
 }

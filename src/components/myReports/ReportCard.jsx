@@ -54,7 +54,7 @@ const ReportCard = ({ r, activeId, setActiveId, isTouchRef, onDelete, onView }) 
         `}>
           <button
             onClick={(e) => { e.stopPropagation(); onView(r) }}
-            className="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-xl hover:bg-yellow-400 transition-colors"
+            className="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-xl hover:bg-yellow-400 transition-colors cursor-pointer"
           >
             Ver
           </button>
@@ -67,7 +67,7 @@ const ReportCard = ({ r, activeId, setActiveId, isTouchRef, onDelete, onView }) 
           </Link>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(r.id) }}
-            className="bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-red-600 transition-colors"
+            className="bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
           >
             Eliminar
           </button>

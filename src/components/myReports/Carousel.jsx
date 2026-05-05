@@ -68,13 +68,13 @@ const Carousel = ({ images, index, setIndex }) => {
           <>
             <button
               onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-105"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-105 cursor-pointer"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <button
               onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-105"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-105 cursor-pointer"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
@@ -96,7 +96,7 @@ const Carousel = ({ images, index, setIndex }) => {
             <button
               key={i}
               onClick={() => go(i, i > index ? 'left' : 'right')}
-              className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
+              className={`cursor-pointer w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
                 i === index
                   ? 'border-yellow-400 scale-105 shadow-md'
                   : 'border-transparent opacity-60 hover:opacity-90'
