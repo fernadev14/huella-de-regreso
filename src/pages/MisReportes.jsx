@@ -143,6 +143,7 @@ const MisReportes = () => {
             handleDelete={handleDelete}
             selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
+            mode="owner" // clave para mostrar acciones de edición/eliminación
           />
         </Suspense>
       )}

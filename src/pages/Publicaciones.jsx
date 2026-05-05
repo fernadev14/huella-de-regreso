@@ -1,478 +1,152 @@
-import { useEffect, useState, useRef } from 'react'
-import { collection, onSnapshot, query, orderBy, where, limit, startAfter, getDocs } from 'firebase/firestore'
-import { db } from '../config/firebase'
-import "../styles/responsive.css";
-import "../styles/publicaciones.css";
-import locationsData from '../data/colombia-municipios.json'
+import { lazy, Suspense, useState, useMemo, useEffect } from 'react'
+import { usePublicaciones } from '../components/publicationCard/Usepublicaciones'
+import SearchBar  from '../components/publicationCard/SearchBar'
+import FilterBar  from '../components/publicationCard/Filterbar'
+import StatsBar   from '../components/publicationCard/StatsBar'
+import PetGrid    from '../components/publicationCard/PetGrid'
 
-// SVG
-import LocationSVG from '../components/SVG/Location';
-import CardIcon from '../components/SVG/CardIcon';
-import PhoneIcon from '../components/SVG/PhoneIcon';
-import PlayIcon from '../components/SVG/PlayIcon';
+// Modal con lazy load (componente pesado)
+const ReportModal = lazy(() => import('../components/myReports/ReportModal'))
 
-
+/* ─────────────────────────────────────────────
+   Publicaciones — página principal
+   ────────────────────────────────────────────*/
 const Publicaciones = () => {
-  const [reports, setReports] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  // Carousel
-  const [selected, setSelected] = useState(null)
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const carouselRef = useRef(null)
-  const isHovering = useRef(false)
-  
-
-
-  // filtros
+  /* Filtros Firestore */
   const [departmentFilter, setDepartmentFilter] = useState('')
-  const [cityFilter, setCityFilter] = useState('')
-  const [barrioFilter, setBarrioFilter] = useState('')
-  const [estadoFilter, setEstadoFilter] = useState('')
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [cityFilter,       setCityFilter]       = useState('')
+  const [barrioFilter,     setBarrioFilter]      = useState('')
+  const [estadoFilter,     setEstadoFilter]      = useState('')
 
-  const [pageSize] = useState(9)
-  const [lastDoc, setLastDoc] = useState(null)
-  const [hasMore, setHasMore] = useState(false)
-  const unsubscribeRef = useRef(null)
-  const [searchQuery, setSearchQuery] = useState('')
+  /* Búsqueda client-side */
+  const [searchQuery,    setSearchQuery]    = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
+  /* Modal */
+  const [selected,      setSelected]      = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+
+  /* Debounce búsqueda */
   useEffect(() => {
-    // desactivar la búsqueda por entrada
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim().toLowerCase()), 300)
     return () => clearTimeout(t)
   }, [searchQuery])
 
-  useEffect(() => {
-    // limpiar suscripción anterior
-    if (unsubscribeRef.current) {
-      try { unsubscribeRef.current() } catch (e) {}
-      unsubscribeRef.current = null
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const constraints = []
-      // Añadir filtros como cláusulas «where».
-      if (departmentFilter) constraints.push(where('department', '==', departmentFilter))
-      if (cityFilter) constraints.push(where('city', '==', cityFilter))
-      if (estadoFilter) constraints.push(where('estado', '==', estadoFilter))
-      if (barrioFilter) constraints.push(where('barrio', '==', barrioFilter))
-
-      // orden y límite
-      constraints.push(orderBy('createdAt', 'desc'))
-      constraints.push(limit(pageSize))
-
-      const q = query(collection(db, 'pets'), ...constraints)
-      const unsub = onSnapshot(q, (snapshot) => {
-        const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-        setReports(items)
-        setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
-        setHasMore(snapshot.docs.length === pageSize)
-        setLoading(false)
-      }, (err) => {
-        console.error(err)
-        setError('Error cargando publicaciones')
-        setLoading(false)
-      })
-
-      unsubscribeRef.current = unsub
-      return () => {
-        try { unsub() } catch (e) {}
-      }
-    } catch (err) {
-      console.error(err)
-      setError('Error inicializando feed')
-      setLoading(false)
-    }
-  }, [departmentFilter, cityFilter, barrioFilter, estadoFilter, pageSize])
-
-  // AUTOMOVIMIENTO CAROUSEL
-  useEffect(() => {
-    if (!selected?.photoURLs?.length) return
-
-    const interval = setInterval(() => {
-      if (isHovering.current) return
-
-      setSelectedIndex(prev =>
-        prev === selected.photoURLs.length - 1 ? 0 : prev + 1
-      )
-    }, 3000)
-
-    return () => clearInterval(interval)
-  }, [selected])
-
-  useEffect(() => {
-    if (!carouselRef.current) return
-    const width = 112 + 8
-    carouselRef.current.style.transform = `translateX(-${selectedIndex * width}px)`
-  }, [selectedIndex])
-
-
-
-  const departments = locationsData.map(d => d.departamento)
-
-  const getCitiesByDepartment = (dept) => {
-    const found = locationsData.find(d => d.departamento === dept)
-    return found ? found.ciudades : []
-  }
-
-
-  const loadMore = async () => {
-    if (!lastDoc) return
-    try {
-      const constraints = []
-      if (departmentFilter) constraints.push(where('department', '==', departmentFilter))
-      if (cityFilter) constraints.push(where('city', '==', cityFilter))
-      if (barrioFilter) constraints.push(where('barrio', '==', barrioFilter))
-      if (estadoFilter) constraints.push(where('estado', '==', estadoFilter))
-      constraints.push(orderBy('createdAt', 'desc'))
-      constraints.push(startAfter(lastDoc))
-      constraints.push(limit(pageSize))
-
-      const q = query(collection(db, 'pets'), ...constraints)
-      const snap = await getDocs(q)
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-      setReports(prev => [...prev, ...items])
-      setLastDoc(snap.docs[snap.docs.length - 1] || null)
-      setHasMore(snap.docs.length === pageSize)
-    } catch (err) {
-      console.error('Error loading more:', err)
-      setError('Error cargando más publicaciones')
-    }
-  }
-
-  // Derivar opciones de filtro
-  const barrios = Array.from(new Set(reports.map(r => r.barrio).filter(Boolean)))
-  const estados = ['perdida', 'encontrada']
-
-  const filtered = reports.filter(r => {
-    if (cityFilter && r.city !== cityFilter) return false
-    if (barrioFilter && r.barrio !== barrioFilter) return false
-    if (estadoFilter && r.estado !== estadoFilter) return false
-    
-    // Búsqueda por título, ciudad, barrio y descripción desde el lado del cliente.
-    if (debouncedSearch) {
-      const searchLower = debouncedSearch.toLowerCase()
-      const matchesSearch = 
-        (r.title && r.title.toLowerCase().includes(searchLower)) ||
-        (r.city && r.city.toLowerCase().includes(searchLower)) ||
-        (r.barrio && r.barrio.toLowerCase().includes(searchLower)) ||
-        (r.description && r.description.toLowerCase().includes(searchLower))
-      if (!matchesSearch) return false
-    }
-    
-    return true
+  /* Datos */
+  const { reports, loading, error, hasMore, loadingMore, loadMore } = usePublicaciones({
+    departmentFilter,
+    cityFilter,
+    barrioFilter,
+    estadoFilter,
   })
 
-// Color according to status "lost" or "found"
-const estadoBadge = (estado = "") => {
-  const e = estado.trim().toLowerCase();
-  if (e === "perdida" || e === "perdido")
-    return "bg-red-100 text-red-800 ring-1 ring-red-200";
-  if (e === "encontrada" || e === "encontrado")
-    return "bg-green-100 text-green-800 ring-1 ring-green-200";
-  return "bg-yellow-100 text-yellow-800 ring-1 ring-yellow-200"; // fallback
-};
+  /* Opciones de barrio derivadas de los reportes cargados */
+  const barrios = useMemo(
+    () => Array.from(new Set(reports.map(r => r.barrio).filter(Boolean))),
+    [reports]
+  )
 
+  /* Filtrado client-side (búsqueda) */
+  const filtered = useMemo(() => {
+    if (!debouncedSearch) return reports
+    return reports.filter(r => {
+      const s = debouncedSearch
+      return (
+        r.title?.toLowerCase().includes(s)       ||
+        r.city?.toLowerCase().includes(s)         ||
+        r.barrio?.toLowerCase().includes(s)       ||
+        r.description?.toLowerCase().includes(s)
+      )
+    })
+  }, [reports, debouncedSearch])
+
+  const hasFilters = !!(departmentFilter || cityFilter || barrioFilter || estadoFilter || debouncedSearch)
 
   return (
-    <div className='min-h-screen bg-gray-100 py-12'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <h1 className='text-3xl font-bold mb-6'>Publicaciones</h1>
-        
-        <div className='container-search'>
-            {/* Entrada de búsqueda */}
-            <div className='mb-6'>
-            <input 
-                type='text' 
-                placeholder='Buscar por nombre, ciudad, barrio o descripción...' 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-yellow-400'
-            />
-            </div>
-            
-            {/* FILTROS ESCRITORIO */}
-            <div className='container-filter-desktop flex gap-3 mb-6 items-center'>
-            <div className='flex items-center gap-2'>
-                <span className='font-semibold mr-2'>Filtros</span>
-                <select
-                  value={departmentFilter}
-                  onChange={(e) => {
-                    setDepartmentFilter(e.target.value)
-                    setCityFilter('')
-                  }}
-                  className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
-                >
-                  <option value=''>Departamento</option>
-                  {departments.map(dep => (
-                    <option key={dep} value={dep}>{dep}</option>
-                  ))}
-                </select>
-
-                <select
-                  value={cityFilter}
-                  onChange={(e)=>setCityFilter(e.target.value)}
-                  disabled={!departmentFilter}
-                  className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
-                >
-                  <option value=''>Ciudad</option>
-                  {getCitiesByDepartment(departmentFilter).map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-            </div>
-
-            <select value={barrioFilter} onChange={(e)=>setBarrioFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
-                <option value=''>Barrio</option>
-                {barrios.map(b => <option key={b} value={b}>{b}</option>)}
-            </select>
-
-            <select value={estadoFilter} onChange={(e)=>setEstadoFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'>
-                <option value=''>Estado</option>
-                {estados.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-
-            <button onClick={()=>{
-                  setDepartmentFilter(''), 
-                  setCityFilter(''); 
-                  setBarrioFilter(''); 
-                  setEstadoFilter('')
-                }} 
-              className='px-3 py-2 rounded border cursor-pointer hover:bg-amber-950 hover:text-amber-50 transition-all duration-300'>
-                Limpiar
-            </button>
-            </div>
-
-            {/* ============ FILTROS MÓVIL ============ */}
-            <div className='container-filter-mobile mb-6'>
-                {/* Trigger compacto */}
-                <button
-                    type='button'
-                    className='w-full flex items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-2'
-                    onClick={()=>setMobileFiltersOpen(o => !o)}
-                    aria-expanded={mobileFiltersOpen}
-                    aria-controls='mobile-filters-panel'
-                >
-                    <span className='font-semibold'>Filtros</span>
-                    {/* icono embudo + chevron */}
-                    <span className='flex items-center gap-2'>
-                    {/* Embudo */}
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    {/* Chevron */}
-                    <svg className={`h-5 w-5 transition-transform ${mobileFiltersOpen ? 'rotate-90' : ''}`} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6.293 2.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L11.586 10 6.293 4.707a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
-                    </span>
-                </button>
-
-                {/* Panel con animación */}
-                <div
-                    id='mobile-filters-panel'
-                    className={`mobile-filters-panel ${mobileFiltersOpen ? 'open' : ''}`}
-                >
-                    <div className='grid grid-cols-1 gap-3'>
-                    <select
-                      value={departmentFilter}
-                      onChange={(e) => {
-                        setDepartmentFilter(e.target.value)
-                        setCityFilter('')
-                      }}
-                      className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
-                    >
-                      <option value=''>Departamento</option>
-                      {departments.map(dep => (
-                        <option key={dep} value={dep}>{dep}</option>
-                      ))}
-                    </select>
-                    
-                    <select
-                      value={cityFilter}
-                      onChange={(e)=>setCityFilter(e.target.value)}
-                      disabled={!departmentFilter}
-                      className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow'
-                    >
-                      <option value=''>Ciudad</option>
-                      {getCitiesByDepartment(departmentFilter).map(c => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-
-                    <select value={barrioFilter} onChange={(e)=>setBarrioFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
-                        <option value=''>Barrio</option>
-                        {barrios.map(b => <option key={b} value={b}>{b}</option>)}
-                    </select>
-
-                    <select value={estadoFilter} onChange={(e)=>setEstadoFilter(e.target.value)} className='bg-[#FFD54F] text-[#333] px-4 py-2 rounded-full shadow w-full'>
-                        <option value=''>Estado</option>
-                        {estados.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-
-                    <button
-                        onClick={()=>{setDepartmentFilter(''), setCityFilter(''); setBarrioFilter(''); setEstadoFilter('')}}
-                        className='px-3 py-2 rounded border w-full'
-                    >
-                        Limpiar
-                    </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {/* <div className='w-full text-center mt-20'><span class="loader"></span></div> */}
-
-        {loading && <div className='w-full text-center mt-20'><span class="loader"></span></div>}
-        {error && <div className='text-red-600'>{error}</div>}
-
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
-          {filtered.map(r => (
-            <div key={r.id} className='bg-white rounded shadow p-3 cursor-pointer' onClick={()=>setSelected(r)}>
-              <div className='h-48 w-full overflow-hidden rounded mb-3 bg-gray-200 flex items-center justify-center'>
-                {r.photoURLs && r.photoURLs[0] ? (
-                  <img src={r.photoURLs[0]} alt={r.title} className='h-full w-full object-cover'/>
-                ) : (
-                  <div className='text-gray-400'>Sin imagen</div>
-                )}
-              </div>
-              <h3 className='font-bold'>{r.title}</h3>
-              <p className='text-sm text-gray-600'>{r.city} {r.barrio ? `· ${r.barrio}` : ''}</p>
-              <p className={`text-xs mt-2 inline-block px-2 py-1 rounded font-semibold ${estadoBadge(r.estado)}`}>
-                {r.estado}
+    <div className='min-h-screen bg-gray-50 mt-20'>
+      {/* ── Hero / Header ── */}
+      <div className='bg-white border-b border-gray-100'>
+        <div className='max-w-6xl mx-auto px-4 py-10'>
+          <div className='flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8'>
+            <div>
+              <h1 className='text-amber-500 text-3xl font-semibold uppercase tracking-widest mb-1'>
+                Mascotas en Colombia
+              </h1>
+              {/* <h1 className='text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight'>
+                Publicaciones
+              </h1> */}
+              <p className='text-gray-500 text-sm mt-1.5'>
+                Reportes de mascotas perdidas y encontradas en tiempo real.
               </p>
             </div>
-          ))}
-        </div>
 
-        {hasMore && (
-          <div className='mt-6 text-center'>
-            <button onClick={loadMore} className='px-4 py-2 bg-[#FFD54F] rounded shadow'>Cargar más</button>
-          </div>
-        )}
-
-        {/* Modal */}
-        {selected && (
-          <div className='fixed inset-0 bg-[#00000082] flex items-center justify-center z-50 p-4'>
-            <div className='bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg overflow-auto max-h-[90vh]'>
-              <div className='flex justify-between items-start mb-4'>
-                <h2 className='text-2xl font-bold w-[70%]'>{selected.title}</h2>
-                <button 
-                    onClick={()=>{ setSelected(null); setSelectedIndex(0) }} 
-                    className='text-amber-50 bg-red-800 px-4 py-2 rounded-md cursor-pointer'>
-                  Cerrar ✕
-                </button>
-              </div>
-
-              <div className='md:flex md:gap-6'>
-                <div className='md:w-2/3'>
-                  <div className='relative'>
-                    <div className='h-96 bg-gray-100 rounded overflow-hidden flex items-center justify-center'>
-                      {selected.photoURLs && selected.photoURLs.length ? (
-                        <img src={selected.photoURLs[selectedIndex]} alt='' className='w-full h-full object-cover' />
-                      ) : (
-                        <div className='text-gray-400'>No hay imagenes para mostrar</div>
-                      )}
-                    </div>
-
-                    {selected.photoURLs && selected.photoURLs.length > 1 && (
-                      <>
-                        <button onClick={()=>setSelectedIndex((i)=> Math.max(0, i-1))} className='absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow cursor-pointer hover:scale-110 duration-300'> <PlayIcon /> </button>
-                        <button onClick={()=>setSelectedIndex((i)=> Math.min(selected.photoURLs.length-1, i+1))} className='absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow cursor-pointer hover:scale-110 duration-300'><PlayIcon className="rotate-180"/></button>
-                      </>
-                    )}
-                  </div>
-
-                  {/* thumbnails */}
-                  {/* <div className='thumbnails flex gap-2 mt-3 overflow-x-auto'>
-                    {(selected.photoURLs || []).map((u, i) => (
-                      <button key={i} onClick={()=>setSelectedIndex(i)} className={`btn-image-thumbnails h-20 w-28 rounded overflow-hidden border ${i===selectedIndex? 'border-yellow-400':'border-transparent'}`}>
-                        <img src={u} className='h-full w-full object-cover' alt={`thumb-${i}`} />
-                      </button>
-                    ))}
-                  </div> */}
-                </div>
-
-                <div className='div-description md:w-1/3 mt-4 md:mt-0 bg-[#ffffff] p-5 rounded-lg shadow-lg'>
-                  <p className='estado-modal mb-2'>
-                    <span className={`inline-block px-2 py-1 rounded font-semibold ${estadoBadge(selected.estado)}`}>
-                      {selected.estado}
-                    </span>
-                  </p>
-                  <p className='mb-4 flex'>
-                    <LocationSVG />
-                    <strong className='description-title mr-1'>
-                      Ubicación:
-                    </strong> {selected.city}{selected.barrio ? `, ${selected.barrio}` : ''}
-                  </p>
-                  <div className='flex'>
-                    <CardIcon />
-                    <strong className='description-title mr-2'>
-                      Descripción:
-                    </strong>
-                  </div>
-                  <p className='mb-4 -mt-5 ml-8 text-md'>
-                    <br/>{selected.description}
-                    </p>
-                  <p className='mb-4 flex flex-wrap'>
-                    <PhoneIcon />
-                    <strong className='description-title mr-2'>Contacto:</strong> {selected.contact}
-                  </p>
-
-                  <hr className='mt-10 text-gray-300'/>
-
-                  {/* CAROUSEL */}
-                  <div
-                    className="thumbnails overflow-hidden mt-3"
-                    onMouseEnter={() => (isHovering.current = true)}
-                    onMouseLeave={() => (isHovering.current = false)}
-                  >
-                    <div
-                      ref={carouselRef}
-                      className="flex gap-2 transition-transform duration-500 ease-in-out"
-                    >
-                      {(selected.photoURLs || []).map((u, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            setSelectedIndex(i)
-                          }}
-                          className={`h-20 w-28 shrink-0 rounded overflow-hidden border ${
-                            i === selectedIndex ? "border-yellow-400" : "border-transparent"
-                          }`}
-                        >
-                          <img src={u} className="h-full w-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* BUTTONS PUNTOS CAROUSEL */}
-                  <div className="flex justify-center gap-2 mt-4">
-                    {(selected.photoURLs || []).map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          setSelectedIndex(i)
-                        }}
-                        className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                          i === selectedIndex
-                            ? "bg-yellow-400 w-6"
-                            : "bg-gray-300 hover:bg-gray-400"
-                        }`}
-                        aria-label={`Ir a imagen ${i + 1}`}
-                      />
-                    ))}
-                  </div>
-                  <p className='text-md text-gray-500 mt-6 w-full text-center'>Publicado por: {selected.authorName}</p>
-                </div>
-              </div>
+            {/* Indicador en tiempo real */}
+            <div className='flex items-center gap-2 text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 self-start sm:self-auto'>
+              <span className='relative flex h-2.5 w-2.5'>
+                <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75'/>
+                <span className='relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500'/>
+              </span>
+              En vivo
             </div>
           </div>
+
+          {/* Búsqueda */}
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        </div>
+      </div>
+
+      {/* ── Contenido ── */}
+      <div className='max-w-6xl mx-auto px-4 py-8'>
+
+        {/* Filtros */}
+        <div className='mb-6'>
+          <FilterBar
+            departmentFilter={departmentFilter} setDepartmentFilter={setDepartmentFilter}
+            cityFilter={cityFilter}             setCityFilter={setCityFilter}
+            barrioFilter={barrioFilter}         setBarrioFilter={setBarrioFilter}
+            estadoFilter={estadoFilter}         setEstadoFilter={setEstadoFilter}
+            barrios={barrios}
+          />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className='mb-6 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm'>
+            <svg className='w-4 h-4 flex-shrink-0' viewBox='0 0 24 24' fill='none'
+              stroke='currentColor' strokeWidth='2' strokeLinecap='round'>
+              <circle cx='12' cy='12' r='10'/>
+              <line x1='12' y1='8' x2='12' y2='12'/>
+              <line x1='12' y1='16' x2='12.01' y2='16'/>
+            </svg>
+            {error}
+          </div>
         )}
 
+        {/* Stats */}
+        <StatsBar reports={filtered} loading={loading} />
+
+        {/* Grid */}
+        <PetGrid
+          reports={filtered}
+          loading={loading}
+          hasMore={hasMore}
+          loadingMore={loadingMore}
+          loadMore={loadMore}
+          hasFilters={hasFilters}
+          onSelect={(r) => { setSelected(r); setSelectedIndex(0) }}
+        />
       </div>
+
+      {/* Modal */}
+      <Suspense fallback={null}>
+        <ReportModal
+          selected={selected}
+          setSelected={setSelected}
+          selectedIndex={selectedIndex}
+          setSelectedIndex={setSelectedIndex}
+          mode='public'
+        />
+      </Suspense>
     </div>
   )
 }

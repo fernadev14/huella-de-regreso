@@ -20,7 +20,15 @@ const InfoRow = ({ icon, label, value }) => {
   )
 }
 
-const ReportModal = ({ selected, setSelected, handleDelete, selectedIndex, setSelectedIndex }) => {
+const ReportModal = (
+  { 
+    selected, 
+    setSelected, 
+    handleDelete, 
+    selectedIndex, 
+    setSelectedIndex,
+    mode = "public" // reutilizable 
+  }) => {
   const [closing, setClosing] = useState(false)
 
   const close = () => {
@@ -121,22 +129,24 @@ const ReportModal = ({ selected, setSelected, handleDelete, selectedIndex, setSe
             </div>
 
             {/* Acciones */}
-            <div className="flex gap-2 pt-4 border-t border-gray-100">
-              <Link
-                to={`/editar-reporte/${selected.id}`}
-                className="flex-1 bg-[#FFD54F] hover:bg-yellow-400 text-gray-900 font-bold text-sm py-2.5 px-4 rounded-xl transition-colors text-center"
-              >
-                ✏️ Editar
-              </Link>
-              <button
-                onClick={() => {
-                  if (window.confirm('¿Eliminar este reporte?')) handleDelete(selected.id)
-                }}
-                className="flex-1 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 font-bold text-sm py-2.5 px-4 rounded-xl transition-all border border-red-200 hover:border-red-500 cursor-pointer"
-              >
-                🗑️ Eliminar
-              </button>
-            </div>
+            {mode === "owner" && (
+              <div className="flex gap-2 pt-4 border-t border-gray-100">
+                <Link
+                  to={`/editar-reporte/${selected.id}`}
+                  className="flex-1 bg-[#FFD54F] hover:bg-yellow-400 text-gray-900 font-bold text-sm py-2.5 px-4 rounded-xl transition-colors text-center"
+                >
+                  ✏️ Editar
+                </Link>
+                <button
+                  onClick={() => {
+                    if (window.confirm('¿Eliminar este reporte?')) handleDelete(selected.id)
+                  }}
+                  className="flex-1 bg-red-50 hover:bg-red-500 hover:text-white text-red-600 font-bold text-sm py-2.5 px-4 rounded-xl transition-all border border-red-200 hover:border-red-500 cursor-pointer"
+                >
+                  🗑️ Eliminar
+                </button>
+              </div>
+            )}
 
           </div>
         </div>
