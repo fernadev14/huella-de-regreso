@@ -23,7 +23,7 @@ function App() {
     <>
       <Header />
 
-      {/* 🔥 Suspense loader global */}
+      {/* Suspense loader global */}
       <Suspense fallback={
         <div className="h-screen flex items-center justify-center">
           <div className="animate-pulse text-gray-500">Cargando...</div>
