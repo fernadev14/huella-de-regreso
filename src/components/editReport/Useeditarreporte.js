@@ -25,7 +25,6 @@ export function useEditarReporte() {
   const [images, setImages]                   = useState([])
   const [previews, setPreviews]               = useState([])
   const [existingPhotos, setExistingPhotos]   = useState([])
-  const [photoToRemove, setPhotoToRemove]     = useState([])
   const fileInput                             = useRef(null)
   const dragIndexRef                          = useRef(null)
 
@@ -135,10 +134,8 @@ export function useEditarReporte() {
   const removeNewImage = (index) =>
     setImages((prev) => prev.filter((_, i) => i !== index))
 
-  const removeExistingPhoto = (url) => {
+  const removeExistingPhoto = (url) =>
     setExistingPhotos((prev) => prev.filter((p) => p !== url))
-    setPhotoToRemove((prev) => [...prev, url])
-  }
 
   const onDragStart = (e, idx) => {
     dragIndexRef.current = idx
