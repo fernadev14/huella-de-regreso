@@ -52,7 +52,7 @@ const Login = () => {
     }
   }
 
-  // Manejo de inicio con Google y optimización con import dinámico
+  // Manejo de inicio con Google y optimización con import dinámicoy
   const handleGoogleSignIn = async () => {
     setError(null)
     setLoading(true)
