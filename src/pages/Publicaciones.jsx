@@ -112,7 +112,7 @@ const Publicaciones = () => {
         {/* Error */}
         {error && (
           <div className='mb-6 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm'>
-            <svg className='w-4 h-4 flex-shrink-0' viewBox='0 0 24 24' fill='none'
+            <svg className='w-4 h-4 shrink-0' viewBox='0 0 24 24' fill='none'
               stroke='currentColor' strokeWidth='2' strokeLinecap='round'>
               <circle cx='12' cy='12' r='10'/>
               <line x1='12' y1='8' x2='12' y2='12'/>

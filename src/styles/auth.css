@@ -1,0 +1,389 @@
+/* ══════════════════════════════════════════
+   Auth — 3D Flip Card + Animaciones
+   ══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ── Variables ── */
+:root {
+  --auth-amber:   #FFD54F;
+  --auth-amber-d: #F9A825;
+  --auth-dark:    #1a1a1a;
+  --auth-mid:     #4a4a4a;
+  --auth-light:   #f9f6f1;
+  --auth-white:   #ffffff;
+  --auth-error:   #e53935;
+  --auth-radius:  20px;
+  --flip-duration: 0.65s;
+}
+
+/* ── Layout ── */
+.auth-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--auth-light);
+  font-family: 'DM Sans', sans-serif;
+}
+
+@media (min-width: 768px) {
+  .auth-page {
+    flex-direction: row;
+  }
+}
+
+/* ── Panel izquierdo (brand) ── */
+.auth-brand-panel {
+  background: var(--auth-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .auth-brand-panel {
+    width: 48%;
+    min-height: 100svh;
+    padding: 3rem;
+  }
+}
+
+/* Círculos decorativos de fondo */
+.auth-brand-panel::before,
+.auth-brand-panel::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  pointer-events: none;
+}
+.auth-brand-panel::before {
+  width: 340px;
+  height: 340px;
+  bottom: -100px;
+  right: -80px;
+}
+.auth-brand-panel::after {
+  width: 180px;
+  height: 180px;
+  top: -50px;
+  left: -40px;
+}
+
+/* ── Panel derecho (card) ── */
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--auth-light);
+}
+
+@media (min-width: 768px) {
+  .auth-form-panel {
+    padding: 3rem 2rem;
+  }
+}
+
+/* ═══════════════════════════════
+   Flip Card
+   ═══════════════════════════════ */
+.flip-scene {
+  width: 100%;
+  max-width: 420px;
+  /* altura mínima para el flip — ajustar si crece el form */
+  perspective: 1200px;
+}
+
+.flip-card {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--flip-duration) cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.flip-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  width: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--auth-white);
+  border-radius: var(--auth-radius);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.04),
+    0 8px 24px rgba(0,0,0,0.08),
+    0 24px 48px rgba(0,0,0,0.06);
+  padding: 2.5rem 2rem;
+}
+
+.flip-face--back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotateY(180deg);
+}
+
+/* Prevenir interacción con la cara oculta */
+.flip-card:not(.is-flipped) .flip-face--back { pointer-events: none; }
+.flip-card.is-flipped .flip-face--front      { pointer-events: none; }
+
+/* ═══════════════════════════════
+   Tipografía
+   ═══════════════════════════════ */
+.auth-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--auth-dark);
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
+}
+
+.auth-subtitle {
+  font-size: 0.875rem;
+  color: var(--auth-mid);
+  margin-bottom: 2rem;
+}
+
+/* ── Inputs ── */
+.auth-field {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 2.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--auth-dark);
+  background: #fafafa;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+
+.auth-input::placeholder { color: #aaa; }
+
+.auth-input:focus {
+  border-color: var(--auth-amber-d);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(249,168,37,0.18);
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bbb;
+  transition: color 0.2s;
+  pointer-events: none;
+}
+
+.auth-field:focus-within .auth-input-icon {
+  color: var(--auth-amber-d);
+}
+
+/* ── Botón principal ── */
+.auth-btn-primary {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--auth-dark);
+  background: var(--auth-amber);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(249,168,37,0.35);
+  margin-top: 0.5rem;
+}
+
+.auth-btn-primary:hover:not(:disabled) {
+  background: var(--auth-amber-d);
+  box-shadow: 0 4px 16px rgba(249,168,37,0.45);
+  transform: translateY(-1px);
+}
+
+.auth-btn-primary:active:not(:disabled) { transform: translateY(0); }
+.auth-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Divider ── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: #ccc;
+  font-size: 0.8rem;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* ── Botón Google ── */
+.auth-btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--auth-dark);
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.auth-btn-google:hover:not(:disabled) {
+  background: #fafafa;
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.auth-btn-google:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Error ── */
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  color: var(--auth-error);
+  font-size: 0.8rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+/* ── Link switch ── */
+.auth-switch-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.auth-switch-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--auth-amber-d);
+  padding: 0;
+  transition: color 0.2s;
+}
+.auth-switch-btn:hover { color: var(--auth-dark); text-decoration: underline; }
+
+/* ── SlideInfo ── */
+.slide-info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 380px;
+}
+
+.slide-info__title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--auth-dark);
+  margin-bottom: 0.75rem;
+}
+
+.slide-info__sub {
+  font-size: 0.95rem;
+  color: #5a4a00;
+  font-weight: 500;
+  line-height: 1.6;
+  max-width: 280px;
+  margin-bottom: 1.5rem;
+}
+
+.slide-info__img {
+  max-height: 280px;
+  filter: drop-shadow(0 20px 28px rgba(0,0,0,0.22));
+  margin-bottom: 2rem;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.slide-info__features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  text-align: left;
+}
+
+.slide-info__feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.8);
+  backdrop-filter: blur(6px);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--auth-dark);
+}
+
+/* ── Spinner ── */
+.auth-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(0,0,0,0.15);
+  border-top-color: var(--auth-dark);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Fade-in entrada ── */
+.auth-fade-in {
+  animation: fadeUp 0.5s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -34,13 +34,13 @@ export function CamposEncontradaNuevo({
           <button
             type="button"
             onClick={() => setMicrochipped((v) => !v)}
-            className={`relative w-10 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-shrink-0 ${
+            className={`relative w-10 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 shrink-0 ${
               microchipped ? 'bg-yellow-400' : 'bg-gray-200'
             }`}
           >
             <span
               className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                microchipped ? 'translate-x-5' : 'translate-x-1'
+                microchipped ? 'translate-x-0.5' : '-translate-x-4'
               }`}
             />
           </button>
