@@ -41,6 +41,8 @@ export const AuthProvider = ({ children }) => {
                   lastName: data.lastName || '',
                   email: data.email || currentUser.email,
                   photoURL: data.photoURL || currentUser.photoURL || null,
+                  phone: data.phone || '',
+                  bio: data.bio || '',
                   uid: currentUser.uid,
                 })
               } else {
@@ -50,6 +52,8 @@ export const AuthProvider = ({ children }) => {
                   lastName: nameParts.slice(1).join(' ') || '',
                   email: currentUser.email,
                   photoURL: currentUser.photoURL || null,
+                  phone: '',
+                  bio: '',
                   uid: currentUser.uid,
                 })
               }

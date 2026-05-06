@@ -1,240 +1,207 @@
-import { useState, useContext, useRef, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { updateProfile } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
-import { db } from '../config/firebase'
-import { AuthContext } from '../context/AuthContext'
-import { uploadToCloudinary } from '../config/cloudinary'
-import Avatar from '../components/Avatar'
+import { useProfile } from '../components/profile/UseProfile.js'
+import '../styles/profile.css'
 
-const Profile = () => {
+// Componentes lazy — no están en el bundle inicial
+const AvatarUpload  = lazy(() => import('../components/profile/AvatarUpload.jsx'))
+const ProfileStats  = lazy(() => import('../components/profile/ProfileStats.jsx'))
+
+/* ─── Skeleton ─── */
+const ProfileSkeleton = () => (
+  <div className='profile-skeleton'>
+    <div className='skel-block' style={{ height: 140, borderRadius: 0 }} />
+    <div style={{ padding: '0 2rem 2rem' }}>
+      <div style={{ marginTop: -48, marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+        <div className='skel-block' style={{ width: 96, height: 96, borderRadius: '50%', flexShrink: 0 }} />
+        <div style={{ paddingBottom: '0.5rem', flex: 1 }}>
+          <div className='skel-block' style={{ height: 22, width: '55%', marginBottom: 8 }} />
+          <div className='skel-block' style={{ height: 14, width: '35%' }} />
+        </div>
+      </div>
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className='skel-block' style={{ height: 44, marginBottom: 12 }} />
+      ))}
+    </div>
+  </div>
+)
+
+/* ─── Acceso denegado ─── */
+const AccessDenied = () => {
   const navigate = useNavigate()
-  const { user, userData, setUserData } = useContext(AuthContext)
-  const fileInputRef = useRef(null)
-
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [photoURL, setPhotoURL] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    if (userData) {
-      setFirstName(userData.firstName || '')
-      setLastName(userData.lastName || '')
-      setPhotoURL(userData.photoURL || '')
-    }
-    setIsMounted(true)
-  }, [userData])
-
-  if (!user) {
-    return (
-      <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
-        <div className='bg-white p-8 rounded-lg shadow-md'>
-          <p className='text-gray-600'>Debes iniciar sesión para acceder a tu perfil</p>
-          <button
-            onClick={() => navigate('/login')}
-            className='mt-4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600'
-          >
-            Ir a Login
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  const handlePhotoChange = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-
-    if (!file.type.startsWith('image/')) {
-      setError('El archivo debe ser una imagen')
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError('La imagen no debe superar 5MB')
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const url = await uploadToCloudinary(file)
-      setPhotoURL(url)
-
-      await updateProfile(user, { photoURL: url })
-
-      const userRef = doc(db, 'users', user.uid)
-      await setDoc(
-        userRef,
-        { photoURL: url, updatedAt: new Date() },
-        { merge: true }
-      )
-
-      setUserData((prev) => ({
-        ...prev,
-        photoURL: url,
-      }))
-
-      setSuccess('Foto actualizada correctamente')
-      setTimeout(() => setSuccess(null), 3000)
-    } catch (err) {
-      setError('Error al subir la foto: ' + err.message)
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError(null)
-    setSuccess(null)
-
-    if (!firstName.trim()) {
-      setError('El nombre es requerido')
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const displayName = `${firstName} ${lastName}`.trim()
-
-      await updateProfile(user, { displayName })
-
-      const userUpdated = {
-        firstName,
-        lastName,
-        email: user.email,
-        photoURL: photoURL || null,
-        uid: user.uid,
-        updatedAt: new Date().toISOString(),
-      }
-
-      const userRef = doc(db, 'users', user.uid)
-      await setDoc(userRef, userUpdated, { merge: true })
-
-      if (setUserData) {
-        setUserData(userUpdated)
-      }
-
-      setSuccess('Perfil actualizado correctamente ✓')
-      setTimeout(() => {
-        if (isMounted) {
-          navigate('/')
-        }
-      }, 1500)
-    } catch (err) {
-      console.error('Error:', err)
-      setError('Error al actualizar el perfil: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (!isMounted) {
-    return (
-      <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
-        <div className='text-gray-600'>Cargando perfil...</div>
-      </div>
-    )
-  }
-
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100 py-12'>
-      <div className='bg-white p-8 rounded-lg shadow-md w-96'>
-        <h1 className='text-2xl font-bold mb-6 text-center'>Editar Perfil</h1>
-
-        {error && <div className='text-red-500 mb-4 p-2 bg-red-100 rounded text-sm'>{error}</div>}
-        {success && <div className='text-green-500 mb-4 p-2 bg-green-100 rounded text-sm'>{success}</div>}
-
-        <div className='flex flex-col items-center mb-6'>
-          <Avatar
-            photoURL={photoURL}
-            firstName={firstName}
-            size='lg'
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className='mt-3 text-blue-500 hover:text-blue-700 text-sm disabled:opacity-50'
-            disabled={loading}
-            type='button'
-          >
-            {photoURL ? 'Cambiar foto' : 'Subir foto'}
-          </button>
-          <input
-            ref={fileInputRef}
-            type='file'
-            accept='image/*'
-            onChange={handlePhotoChange}
-            className='hidden'
-            disabled={loading}
-          />
-        </div>
-
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <div>
-            <label className='block text-sm font-semibold text-gray-700 mb-2'>
-              Nombre
-            </label>
-            <input
-              type='text'
-              placeholder='Tu nombre'
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className='w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
-              disabled={loading}
-            />
-          </div>
-
-          <div>
-            <label className='block text-sm font-semibold text-gray-700 mb-2'>
-              Apellido
-            </label>
-            <input
-              type='text'
-              placeholder='Tu apellido'
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className='w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:border-blue-500'
-              disabled={loading}
-            />
-          </div>
-
-          <div>
-            <label className='block text-sm font-semibold text-gray-700 mb-2'>
-              Correo
-            </label>
-            <input
-              type='email'
-              value={user.email}
-              disabled
-              className='w-full border border-gray-300 px-4 py-2 rounded-md bg-gray-100 text-gray-600'
-            />
-          </div>
-
-          <button
-            type='submit'
-            disabled={loading}
-            className='bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-          >
-            {loading ? 'Guardando...' : 'Guardar Cambios'}
-          </button>
-        </form>
-
-        <button
-          onClick={() => navigate('/')}
-          className='mt-4 w-full text-blue-500 hover:text-blue-700 text-sm'
-          type='button'
-        >
-          ← Volver al inicio
+    <div className='profile-page' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className='profile-card profile-fade' style={{ maxWidth: 380, padding: '2.5rem 2rem', textAlign: 'center' }}>
+        <p style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🔒</p>
+        <p style={{ fontFamily: 'Fraunces, serif', fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+          Acceso restringido
+        </p>
+        <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+          Debes iniciar sesión para acceder a tu perfil.
+        </p>
+        <button className='profile-btn-save' style={{ display: 'block', width: '100%' }}
+          onClick={() => navigate('/login')}>
+          Ir a iniciar sesión
         </button>
       </div>
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════
+   Profile — página principal
+   ═══════════════════════════════════════ */
+const Profile = () => {
+  const navigate = useNavigate()
+  const {
+    user, ready,
+    firstName, setFirstName,
+    lastName,  setLastName,
+    phone,     setPhone,
+    bio,       setBio,
+    photoURL,
+    handlePhotoChange,
+    handleSubmit,
+    loading, uploadingImg, error, toast,
+  } = useProfile()
+
+  if (!ready) return <div className='profile-page'><ProfileSkeleton /></div>
+  if (!user)  return <AccessDenied />
+
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Tu perfil'
+
+  return (
+    <div className='profile-page mt-20'>
+      <div className='profile-fade' style={{ paddingTop: '2rem', paddingLeft: '1rem', paddingRight: '1rem' }}>
+
+        <div className='profile-card'>
+
+          {/* ── Banner ── */}
+          <div className='profile-banner' />
+
+          {/* ── Avatar + nombre ── */}
+          <div className='profile-header-body'>
+            <Suspense fallback={
+              <div className='skel-block' style={{ width: 96, height: 96, borderRadius: '50%', flexShrink: 0, border: '4px solid #fff' }} />
+            }>
+              <AvatarUpload
+                photoURL={photoURL}
+                firstName={firstName}
+                uploading={uploadingImg}
+                onFileSelect={handlePhotoChange}
+                disabled={loading}
+              />
+            </Suspense>
+
+            <div className='profile-header-meta'>
+              <p className='profile-display-name'>{displayName}</p>
+              <p className='profile-display-email'>{user.email}</p>
+            </div>
+          </div>
+
+          {/* ── Stats ── */}
+          <Suspense fallback={null}>
+            <ProfileStats uid={user.uid} />
+          </Suspense>
+
+          <div className='profile-divider' />
+
+          {/* ── Alerts ── */}
+          {error && (
+            <div className='profile-alert profile-alert--error' role='alert'>
+              <svg width='14' height='14' viewBox='0 0 24 24' fill='none'
+                stroke='currentColor' strokeWidth='2.5' strokeLinecap='round'>
+                <circle cx='12' cy='12' r='10'/>
+                <line x1='12' y1='8' x2='12' y2='12'/>
+                <circle cx='12' cy='16.5' r='0.5' fill='currentColor'/>
+              </svg>
+              {error}
+            </div>
+          )}
+
+          {/* ── Formulario ── */}
+          <form onSubmit={handleSubmit} noValidate>
+
+            {/* Información personal */}
+            <div className='profile-form-section'>
+              <p className='profile-section-title'>Información personal</p>
+              <div className='profile-fields-grid'>
+                <div className='profile-field'>
+                  <label className='profile-label' htmlFor='firstName'>Nombre *</label>
+                  <input id='firstName' type='text' placeholder='Tu nombre'
+                    value={firstName} onChange={e => setFirstName(e.target.value)}
+                    className='profile-input' disabled={loading} autoComplete='given-name' />
+                </div>
+
+                <div className='profile-field'>
+                  <label className='profile-label' htmlFor='lastName'>Apellido</label>
+                  <input id='lastName' type='text' placeholder='Tu apellido'
+                    value={lastName} onChange={e => setLastName(e.target.value)}
+                    className='profile-input' disabled={loading} autoComplete='family-name' />
+                </div>
+
+                <div className='profile-field'>
+                  <label className='profile-label' htmlFor='email'>Correo</label>
+                  <input id='email' type='email' value={user.email}
+                    className='profile-input' disabled readOnly
+                    title='El correo no se puede cambiar' />
+                </div>
+
+                <div className='profile-field'>
+                  <label className='profile-label' htmlFor='phone'>
+                    Teléfono de contacto
+                    <span style={{ fontWeight: 400, color: '#aaa', marginLeft: 4 }}>
+                      (visible en tus reportes)
+                    </span>
+                  </label>
+                  <input id='phone' type='text' placeholder='Ej. 310 123 4567'
+                    value={phone} onChange={e => setPhone(e.target.value)}
+                    className='profile-input' disabled={loading} autoComplete='tel' />
+                </div>
+              </div>
+            </div>
+
+            {/* Bio */}
+            <div className='profile-form-section' style={{ marginTop: '1.5rem' }}>
+              <p className='profile-section-title'>Sobre ti</p>
+              <div className='profile-field'>
+                <label className='profile-label' htmlFor='bio'>
+                  Bio
+                  <span style={{ fontWeight: 400, color: '#aaa', marginLeft: 4 }}>
+                    (aparece en tus publicaciones)
+                  </span>
+                </label>
+                <textarea id='bio' placeholder='Cuéntanos sobre ti y tus mascotas…'
+                  value={bio} onChange={e => setBio(e.target.value)}
+                  className='profile-input profile-textarea'
+                  disabled={loading} maxLength={280} rows={3}
+                />
+                <span style={{ fontSize: '0.72rem', color: '#bbb', textAlign: 'right' }}>
+                  {bio.length}/280
+                </span>
+              </div>
+            </div>
+
+            {/* Acciones */}
+            <div className='profile-actions'>
+              <button type='submit' disabled={loading || uploadingImg} className='profile-btn-save'>
+                {loading
+                  ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                      <span className='profile-spinner' /> Guardando…
+                    </span>
+                  : 'Guardar cambios'}
+              </button>
+              <button type='button' onClick={() => navigate('/')} className='profile-btn-back'>
+                ← Volver
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      {/* ── Toast de éxito ── */}
+      {toast && <div className='profile-toast' role='status'>{toast}</div>}
     </div>
   )
 }
