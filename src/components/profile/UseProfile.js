@@ -8,6 +8,8 @@ export function useProfile() {
   const navigate = useNavigate()
   const { user, userData, setUserData } = useContext(AuthContext)
   const isMounted = useRef(true)
+  const toastTimer  = useRef(null)  // ← ref para el timer del toast
+  const navTimer    = useRef(null)  // ← ref para el timer de navegación
 
   const [firstName,    setFirstName]    = useState('')
   const [lastName,     setLastName]     = useState('')
@@ -50,19 +52,16 @@ export function useProfile() {
     setPhotoURL (userData?.photoURL  || '')
     setPhone    (userData?.phone     || '')
     setBio      (userData?.bio       || '')
+    setReady(true)
     
 
     // Paso 2 — fetch fresco desde Firestore, gana sobre el cache
     const fetchFresh = async () => {
       try {
-        // const [{ doc, getDoc }, { db }] = await Promise.all([
-        //   import('firebase/firestore'),
-        //   import('../../config/firebase'),
-        // ])
 
         const snap = await getDoc(doc(db, 'users', user.uid))
 
-        console.log('DATA FIRESTORE:', snap.data())
+        // console.log('DATA FIRESTORE:', snap.data())
         if (cancelled || !isMounted.current) return
 
         if (snap.exists()) {
@@ -80,25 +79,24 @@ export function useProfile() {
     }
 
     fetchFresh()
-    
-    setReady(true)
-
     return () => { cancelled = true }
-
-  // ⚠️ SOLO user?.uid — si añadimos userData aquí, vuelve la race condition
   }, [user?.uid]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ─── Cleanup ─── */
+  /* ─── Cleanup timers al desmontar ─── */
   useEffect(() => {
-    return () => { isMounted.current = false }
+    return () => {
+      isMounted.current = false
+      clearTimeout(toastTimer.current)
+      clearTimeout(navTimer.current)
+    }
   }, [])
 
   /* ─── Toast efímero ─── */
-  const showToast = (msg, delay = 2500) => {
+  const showToast = (msg, duration = 2000) => {
+    // Cancelar timer anterior si existía
+    clearTimeout(toastTimer.current)
     setToast(msg)
-    setTimeout(() => {
-      if (isMounted.current) setToast(null)
-    }, delay)
+    toastTimer.current = setTimeout(() => setToast(null), duration)
   }
 
   /* ─── Subir foto ─── */
@@ -176,8 +174,17 @@ export function useProfile() {
       setUserData?.(prev => ({ ...prev, ...userUpdated }))
 
       setLoading(false)
-      showToast('✓ Perfil guardado correctamente')
-      setTimeout(() => { if (isMounted.current) navigate('/') }, 1800)
+
+      clearTimeout(toastTimer.current)
+      clearTimeout(navTimer.current)
+      setToast('✓ Perfil guardado correctamente')
+
+      toastTimer.current = setTimeout(() => {
+        setToast(null)
+        navTimer.current = setTimeout(() => {
+          if (isMounted.current) navigate('/')
+        }, 150) // pequeño delay para que el fade-out del toast sea visible
+      }, 1800)
 
     } catch (err) {
       if (isMounted.current) {

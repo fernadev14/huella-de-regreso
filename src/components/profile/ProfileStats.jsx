@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react'
  * - Encontrados
  * Firebase se importa dinámicamente.
  */
+
+const pluralize = (count, singular, plural) => count === 1 ? singular : plural
+
 const ProfileStats = ({ uid }) => {
   const [stats,   setStats]   = useState(null)
   const [loading, setLoading] = useState(true)
@@ -27,9 +30,9 @@ const ProfileStats = ({ uid }) => {
         const base = collection(db, 'pets')
 
         const [total, perdidos, encontrados] = await Promise.all([
-          getCountFromServer(query(base, where('userId', '==', uid))),
-          getCountFromServer(query(base, where('userId', '==', uid), where('estado', 'in', ['perdida','perdido']))),
-          getCountFromServer(query(base, where('userId', '==', uid), where('estado', 'in', ['encontrada','encontrado']))),
+          getCountFromServer(query(base, where('authorUid', '==', uid))),
+          getCountFromServer(query(base, where('authorUid', '==', uid), where('estado', 'in', ['perdida','perdido']))),
+          getCountFromServer(query(base, where('authorUid', '==', uid), where('estado', 'in', ['encontrada','encontrado']))),
         ])
 
         if (!cancelled) {
@@ -53,9 +56,9 @@ const ProfileStats = ({ uid }) => {
   if (loading || !stats) return null
 
   const items = [
-    { icon: '📋', label: 'Publicaciones', value: stats.total },
-    { icon: '🔴', label: 'Perdidos',      value: stats.perdidos },
-    { icon: '🟢', label: 'Encontrados',   value: stats.encontrados },
+    { icon: '📋', label: pluralize(stats.total, 'publicacion', 'Publicaciones'), value: stats.total },
+    { icon: '🔴', label: pluralize(stats.total, 'perdido', 'Perdidos'),      value: stats.perdidos },
+    { icon: '🟢', label: pluralize(stats.total, 'encontrado', 'Encontrados'),   value: stats.encontrados },
   ]
 
   return (
