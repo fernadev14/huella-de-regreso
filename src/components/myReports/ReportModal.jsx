@@ -69,12 +69,13 @@ const ReportModal = (
       onClick={close}
     >
       <div
-        className={`bg-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl transition-all duration-200 ${panelAnim}`}
+        className={`bg-white w-full max-w-3xl rounded-2xl shadow-2xl transition-all duration-200 ${panelAnim}
+                  max-h-[90vh] flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-gray-900">
               {selected.title || 'Sin nombre'}
@@ -92,7 +93,7 @@ const ReportModal = (
         </div>
 
         {/* Body — dos columnas */}
-        <div className="grid md:grid-cols-[1fr_280px] divide-y md:divide-y-0 md:divide-x divide-gray-100">
+        <div className="grid md:grid-cols-[1fr_280px] divide-y md:divide-y-0 md:divide-x divide-gray-100 overflow-y-auto">
 
           {/* Izquierda: carousel */}
           <div className="p-5">

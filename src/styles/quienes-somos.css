@@ -186,6 +186,7 @@ ABOUTVALUE
   @media (max-width: 768px) {
     .values-section { padding: 64px 20px; }
     .values-grid { grid-template-columns: repeat(2, 1fr); }
+    .container-hero {margin-top: 70px;}
   }
   @media (max-width: 480px) {
     .values-grid { grid-template-columns: 1fr; }

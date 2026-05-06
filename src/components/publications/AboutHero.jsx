@@ -27,7 +27,7 @@ export default function AboutHero() {
       </motion.span>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 text-center max-w-3xl">
+      <div className="container-hero relative z-10 text-center max-w-3xl">
 
         {/* TITLE */}
         <motion.h1
