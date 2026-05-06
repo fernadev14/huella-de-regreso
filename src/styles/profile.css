@@ -169,7 +169,7 @@
 
 .profile-display-email {
   font-size: 0.82rem;
-  color: var(--p-muted);
+  color: var(--p-mid);
   margin-top: 2px;
 }
 
@@ -230,9 +230,13 @@
 
 @media (max-width: 520px) {
   .profile-fields-grid { grid-template-columns: 1fr; }
-  .profile-header-body { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .profile-header-body { align-items: center; justify-content: center; gap: 0.75rem; padding: 0;}
   .profile-card { border-radius: 0; }
+  .profile-stats { padding-top: 20px; }
+  .profile-stat-chip { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
   .profile-page { padding-bottom: 2rem; }
+  .profile-avatar-wrap { width: 80px; height: 80px; }
+  .profile-avatar-img, .profile-avatar-initials { width: 80px; height: 80px; }
 }
 
 .profile-field {
