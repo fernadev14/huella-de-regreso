@@ -431,3 +431,70 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* --- Loading stadisticas --- */
+.loader {
+  width: 190px;
+  height: 5px;
+  background-color: rgb(66, 66, 66);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.child {
+  width: 160px;
+  height: 5px;
+  background-color: rgb(164, 208, 19);
+  border-radius: 20px;
+  z-index: 0;
+  margin-left: -60px;
+  animation: go 1s 0s infinite;
+}
+
+@keyframes go {
+  from {
+    margin-left: -190px;
+    width: 140px;
+  }
+  to {
+    width: 70px;
+    margin-left: 200px;
+  }
+}
+
+ul {
+  list-style: none;
+}
+
+.text {
+  width: 400px;
+  height: 30px;
+  background-color: transparent;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.text::before {
+  content: "Cargando estadisticas";
+  font-size: 1em;
+  color: rgba(43, 43, 43, 0.494);
+  animation: text 1s 0s infinite;
+}
+
+@keyframes text {
+  0% {
+    content: "Cargando estadisticas";
+  }
+
+  30% {
+    content: "Cargando estadisticas.";
+  }
+
+  60% {
+    content: "Cargando estadisticas..";
+  }
+
+  100% {
+    content: "Cargando estadisticas...";
+  }
+}

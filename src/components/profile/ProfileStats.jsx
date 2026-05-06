@@ -53,24 +53,55 @@ const ProfileStats = ({ uid }) => {
     return () => { cancelled = true }
   }, [uid])
 
-  if (loading || !stats) return null
+  if (loading) {
+    return (
+      <ul className='flex flex-col justify-center items-center'>
+        <li>
+          <div className="loader">
+            <div className="child"></div>
+          </div>
+        </li>
+
+        <li>
+          <div className="text"></div>
+        </li>
+      </ul>
+    )
+  }
+
+  if (!stats) return null
 
   const items = [
-    { icon: '📋', label: pluralize(stats.total, 'publicacion', 'Publicaciones'), value: stats.total },
-    { icon: '🔴', label: pluralize(stats.total, 'perdido', 'Perdidos'),      value: stats.perdidos },
-    { icon: '🟢', label: pluralize(stats.total, 'encontrado', 'Encontrados'),   value: stats.encontrados },
+    { icon: '📋', label: pluralize(stats.total, 'Publicación', 'Publicaciones'), value: stats.total },
+    { icon: '🔴', label: pluralize(stats.perdidos, 'Perdido', 'Perdidos'), value: stats.perdidos },
+    { icon: '🟢', label: pluralize(stats.encontrados, 'Encontrado', 'Encontrados'), value: stats.encontrados },
   ]
 
   return (
-    <div className='profile-stats'>
-      {items.map(item => (
-        <div key={item.label} className='profile-stat-chip'>
+    <>
+      <div className='profile-stats justify-center'>
+      {items.map((item, i) => (
+        <div key={i} className='profile-stat-chip'>
           <span>{item.icon}</span>
           <span className='stat-num'>{item.value}</span>
-          <span style={{ color: '#6b7280', fontWeight: 500 }}>{item.label}</span>
+          <span style={{ color: '#6b7280', fontWeight: 500 }}>
+            {item.label}
+          </span>
         </div>
       ))}
+
     </div>
+      {/* <ul className='flex flex-col justify-center items-center'>
+        <li>
+          <div className="loader">
+            <div className="child"></div>
+          </div>
+        </li>
+        <li>
+          <div className="text"></div>
+        </li>
+      </ul> */}
+    </>
   )
 }
 
